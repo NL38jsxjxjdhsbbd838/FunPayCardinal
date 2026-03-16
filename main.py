@@ -95,8 +95,66 @@ print(f"{Fore.MAGENTA}{Style.BRIGHT} * Донат: {Fore.BLUE}{Style.BRIGHT}t.me
 print(f"{Fore.MAGENTA}{Style.BRIGHT} * Telegram-чат: {Fore.BLUE}{Style.BRIGHT}t.me/funpay_cardinal")
 
 if not os.path.exists("configs/_main.cfg"):
-    first_setup()
-    sys.exit()
+    golden_key = os.getenv("FUNPAY_GOLDEN_KEY", "").strip()
+    if golden_key:
+        from configparser import ConfigParser
+        from Utils.cardinal_tools import hash_password
+        tg_enabled = os.getenv("TELEGRAM_ENABLED", "0").strip()
+        tg_token = os.getenv("TELEGRAM_TOKEN", "").strip()
+        tg_password = os.getenv("TELEGRAM_PASSWORD", "Cardinal1Default").strip()
+        cfg = ConfigParser(delimiters=(":",), interpolation=None)
+        cfg.optionxform = str
+        cfg.read_dict({
+            "FunPay": {
+                "golden_key": golden_key,
+                "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36",
+                "autoRaise": "0", "autoResponse": "0", "autoDelivery": "0",
+                "multiDelivery": "0", "autoRestore": "0", "autoDisable": "0",
+                "oldMsgGetMode": "0", "locale": "ru",
+            },
+            "Telegram": {
+                "enabled": tg_enabled,
+                "token": tg_token,
+                "secretKeyHash": hash_password(tg_password),
+                "blockLogin": "0",
+            },
+            "BlockList": {
+                "blockDelivery": "0", "blockResponse": "0",
+                "blockNewMessageNotification": "0", "blockNewOrderNotification": "0",
+                "blockCommandNotification": "0",
+            },
+            "NewMessageView": {
+                "includeMyMessages": "1", "includeFPMessages": "1", "includeBotMessages": "0",
+                "notifyOnlyMyMessages": "0", "notifyOnlyFPMessages": "0",
+                "notifyOnlyBotMessages": "0", "showImageName": "1",
+            },
+            "Greetings": {
+                "ignoreSystemMessages": "0", "onlyNewChats": "0", "sendGreetings": "0",
+                "greetingsText": "Привет, $chat_name!", "greetingsCooldown": "2",
+            },
+            "OrderConfirm": {
+                "watermark": "1", "sendReply": "0",
+                "replyText": "$username, спасибо за подтверждение заказа $order_id!",
+            },
+            "ReviewReply": {
+                "star1Reply": "0", "star2Reply": "0", "star3Reply": "0",
+                "star4Reply": "0", "star5Reply": "0",
+                "star1ReplyText": "", "star2ReplyText": "", "star3ReplyText": "",
+                "star4ReplyText": "", "star5ReplyText": "",
+            },
+            "Proxy": {
+                "enable": "0", "ip": "", "port": "", "login": "", "password": "", "check": "0",
+            },
+            "Other": {
+                "watermark": "🐦", "requestsDelay": "4", "language": "ru",
+            },
+        })
+        with open("configs/_main.cfg", "w", encoding="utf-8") as f:
+            cfg.write(f)
+        print("Конфиг создан из переменных окружения.")
+    else:
+        first_setup()
+        sys.exit()
 
 if sys.platform == "linux" and os.getenv('FPC_IS_RUNNIG_AS_SERVICE', '0') == '1':
     import getpass
