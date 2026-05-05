@@ -9,4 +9,4 @@ cmds = [
 ]
 
 [start]
-cmd = "python main.py"
+cmd = "bash start.sh"
