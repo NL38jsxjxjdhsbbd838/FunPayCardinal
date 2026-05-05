@@ -1,3 +1,11 @@
+import traceback
+import sys
+
+def handle_exception(exc_type, exc_value, exc_traceback):
+    print("GLOBAL ERROR:", exc_value)
+    traceback.print_exception(exc_type, exc_value, exc_traceback)
+
+sys.excepthook = handle_exception
 import time
 from pip._internal.cli.main import main
 
