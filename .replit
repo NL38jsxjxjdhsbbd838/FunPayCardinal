@@ -38,3 +38,6 @@ args = "bash start.sh"
 
 [workflows.workflow.metadata]
 outputType = "console"
+
+[agent]
+expertMode = true
