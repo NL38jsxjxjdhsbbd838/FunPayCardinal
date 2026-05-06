@@ -1741,6 +1741,7 @@ def init_commands(c: Cardinal):
                 )
 
                 def handle_new_hash(m):
+                    global FRAGMENT_HASH, url, headers
                     if m.text.startswith('/'):
                         c.telegram.bot.send_message(chat_id, "❌ Ввод отменен.")
                         update_settings_panel(c, chat_id, message_id)
@@ -1751,6 +1752,8 @@ def init_commands(c: Cardinal):
                         c.telegram.bot.remove_message_handler(handle_new_hash)
                         return
                     config["fragment_api"]["hash"] = m.text.strip()
+                    FRAGMENT_HASH = m.text.strip()
+                    url = f"{FRAGMENT_URL}?hash={FRAGMENT_HASH}"
                     with open(CONFIG_FILE, 'w', encoding='utf-8') as f:
                         json.dump(config, f, indent=4, ensure_ascii=False)
                     c.telegram.bot.send_message(chat_id, "✅ Хэш обновлен!")
@@ -1772,6 +1775,7 @@ def init_commands(c: Cardinal):
                 )
 
                 def handle_new_cookie(m):
+                    global FRAGMENT_COOKIE, headers
                     if m.text.startswith('/'):
                         c.telegram.bot.send_message(chat_id, "❌ Ввод отменен.")
                         update_settings_panel(c, chat_id, message_id)
@@ -1782,6 +1786,8 @@ def init_commands(c: Cardinal):
                         c.telegram.bot.remove_message_handler(handle_new_cookie)
                         return
                     config["fragment_api"]["cookie"] = m.text.strip()
+                    FRAGMENT_COOKIE = m.text.strip()
+                    headers["Cookie"] = FRAGMENT_COOKIE
                     with open(CONFIG_FILE, 'w', encoding='utf-8') as f:
                         json.dump(config, f, indent=4, ensure_ascii=False)
                     c.telegram.bot.send_message(chat_id, "✅ Куки обновлена!")
@@ -1804,6 +1810,7 @@ def init_commands(c: Cardinal):
                 )
 
                 def handle_new_mnemonic(m):
+                    global MNEMONIC
                     if m.text.startswith('/'):
                         c.telegram.bot.send_message(chat_id, "❌ Ввод отменен.")
                         update_settings_panel(c, chat_id, message_id)
@@ -1818,6 +1825,7 @@ def init_commands(c: Cardinal):
                         c.telegram.bot.send_message(chat_id, "❌ Должно быть 24 слова!")
                         return
                     config["MNEMONIC"] = new_mnemonic
+                    MNEMONIC = new_mnemonic
                     with open(CONFIG_FILE, 'w', encoding='utf-8') as f:
                         json.dump(config, f, indent=4, ensure_ascii=False)
                     c.telegram.bot.send_message(chat_id, "✅ Мнемоника обновлена!")
@@ -1839,6 +1847,7 @@ def init_commands(c: Cardinal):
                 )
 
                 def handle_new_user_id(m):
+                    global USER_ID
                     if m.text.startswith('/'):
                         c.telegram.bot.send_message(chat_id, "❌ Ввод отменен.")
                         update_settings_panel(c, chat_id, message_id)
@@ -1854,6 +1863,7 @@ def init_commands(c: Cardinal):
                         c.telegram.bot.send_message(chat_id, "❌ User ID должен быть числом!")
                         return
                     config["user_id"] = new_user_id
+                    USER_ID = new_user_id
                     with open(CONFIG_FILE, 'w', encoding='utf-8') as f:
                         json.dump(config, f, indent=4, ensure_ascii=False)
                     c.telegram.bot.send_message(chat_id, "✅ User ID обновлен!")
