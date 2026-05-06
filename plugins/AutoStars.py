@@ -228,6 +228,34 @@ headers = {
     "X-Requested-With": "XMLHttpRequest"
 }
 
+def refresh_fragment_hash():
+    """Автоматически получает свежий hash с fragment.com/stars/buy по текущей cookie."""
+    global FRAGMENT_HASH, url
+    try:
+        import re as _re
+        import requests as _req
+        page_headers = {
+            "Cookie": FRAGMENT_COOKIE,
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/124.0.0.0",
+        }
+        resp = _req.get("https://fragment.com/stars/buy", headers=page_headers, timeout=15)
+        matches = _re.findall(r'[?&]hash=([a-f0-9]{10,})', resp.text)
+        if matches:
+            new_hash = matches[0]
+            if new_hash != FRAGMENT_HASH:
+                logger.info(f"[AutoStars] Fragment hash обновлён: {FRAGMENT_HASH} → {new_hash}")
+                FRAGMENT_HASH = new_hash
+                url = f"{FRAGMENT_URL}?hash={FRAGMENT_HASH}"
+                config["fragment_api"]["hash"] = new_hash
+                save_config(config)
+            else:
+                logger.debug(f"[AutoStars] Fragment hash актуален: {FRAGMENT_HASH}")
+        else:
+            logger.warning("[AutoStars] Не удалось найти hash на странице fragment.com — cookie могла истечь")
+    except Exception as _e:
+        logger.warning(f"[AutoStars] Ошибка автообновления Fragment hash: {_e}")
+
+
 def decoder(data: str) -> bytes:
     while len(data) % 4 != 0:
         data += "="
@@ -1633,6 +1661,14 @@ def handle_status_command(c: Cardinal, e: NewMessageEvent):
     )
 
 
+def _hash_refresh_loop():
+    """Фоновый поток: обновляет Fragment hash каждый час."""
+    import time as _time
+    while True:
+        _time.sleep(3600)
+        refresh_fragment_hash()
+
+
 def init_commands(c: Cardinal):
     """Инициализация команд и callback-обработчиков для бота."""
     global payment_processor
@@ -1642,6 +1678,11 @@ def init_commands(c: Cardinal):
             logger.info("[AutoStars] PaymentProcessor успешно инициализирован.")
         except Exception as _pp_err:
             logger.error(f"[AutoStars] Не удалось инициализировать PaymentProcessor: {_pp_err}")
+
+    # Обновляем Fragment hash при старте и запускаем фоновое обновление каждый час
+    refresh_fragment_hash()
+    _hash_thread = threading.Thread(target=_hash_refresh_loop, daemon=True, name="FragmentHashRefresh")
+    _hash_thread.start()
 
     c.add_telegram_commands(UUID, [
         ("stars_config", "настройка автопродажи тг старсов", True),
