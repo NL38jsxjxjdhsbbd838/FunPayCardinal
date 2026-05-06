@@ -857,7 +857,7 @@ def handle_new_order_stars(c: Cardinal, e: NewOrderEvent, *args):
                 logger.debug(f"  - {param_name}: {param_value}")
 
             logger.debug(f"Параметры покупателя:")
-            for param_name, param_value in order_details.buyer_params.items():
+            for param_name, param_value in order_details.lot_params_dict.items():
                 logger.debug(f"  - {param_name}: {param_value}")
 
                 if param_name == "Telegram Username" and param_value:
