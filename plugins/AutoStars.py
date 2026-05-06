@@ -69,7 +69,7 @@ except ImportError:
 
 try:
     from tonutils.client import TonapiClient
-    from tonutils.wallet import WalletV5R1
+    from tonutils.wallet import WalletV4R2
 except Exception as _tonutils_err:
     import traceback
     print(f"[AutoStars] Ошибка импорта tonutils: {_tonutils_err}")
@@ -78,7 +78,7 @@ except Exception as _tonutils_err:
         print("[AutoStars] Переустановка tonutils...")
         _pip_install("tonutils")
         from tonutils.client import TonapiClient
-        from tonutils.wallet import WalletV5R1
+        from tonutils.wallet import WalletV4R2
     except Exception as _tonutils_err2:
         traceback.print_exc()
         raise ImportError(f"[AutoStars] Не удалось импортировать tonutils: {_tonutils_err2}")
@@ -360,25 +360,30 @@ def update_stats(success: bool, quantity: int):
 
 async def check_wallet_balance() -> float:
     client = TonapiClient(api_key=API_KEY, is_testnet=IS_TESTNET)
-    wallet, public_key, private_key, mnemonic = WalletV5R1.from_mnemonic(client, MNEMONIC)
+    wallet, public_key, private_key, mnemonic = WalletV4R2.from_mnemonic(client, MNEMONIC)
+    address = wallet.address.to_str(is_bounceable=False)
     try:
-        balance_nano = await wallet.balance()
-    except Exception as e:
-        if "404" in str(e) or "entity not found" in str(e).lower():
-            logger.debug("Кошелёк ещё не развёрнут в блокчейне (нет транзакций). Баланс: 0.0 TON")
+        net = "testnet." if IS_TESTNET else ""
+        url = f"https://{net}toncenter.com/api/v2/getAddressInformation?address={address}"
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, timeout=aiohttp.ClientTimeout(total=10)) as resp:
+                data = await resp.json()
+        if data.get("ok"):
+            balance_nano = int(data["result"]["balance"])
+            balance_ton = balance_nano / 1_000_000_000
+            logger.debug(f"Баланс кошелька ({address}): {balance_ton:.6f} TON")
+            return balance_nano
+        else:
+            logger.warning(f"toncenter вернул ошибку: {data}")
             return 0
-        raise
-    if config["USE_OLD_BALANCE"]:
-        balance_ton = balance_nano
-    else:
-        balance_ton = balance_nano / 1_000_000_000
-    logger.debug(f"Баланс кошелька: {balance_ton} TON")
-    return balance_nano
+    except Exception as e:
+        logger.warning(f"Ошибка получения баланса через toncenter: {e}")
+        return 0
 
 
 async def send_ton_transaction(amount: float, comment: str, destination_address: str) -> Tuple[Optional[str], Optional[str], Optional[str]]:
     client = TonapiClient(api_key=API_KEY, is_testnet=IS_TESTNET)
-    wallet, public_key, private_key, mnemonic = WalletV5R1.from_mnemonic(client, MNEMONIC)
+    wallet, public_key, private_key, mnemonic = WalletV4R2.from_mnemonic(client, MNEMONIC)
     balance_nano = await check_wallet_balance()
     balance_ton = balance_nano / 1_000_000_000
     if balance_ton < amount:
@@ -1884,9 +1889,9 @@ def init_commands(c: Cardinal):
             elif data == "show_wallet_address":
                 try:
                     from tonutils.client import TonapiClient
-                    from tonutils.wallet import WalletV5R1
+                    from tonutils.wallet import WalletV4R2
                     client = TonapiClient(api_key=API_KEY, is_testnet=IS_TESTNET)
-                    wallet, _, _, _ = WalletV5R1.from_mnemonic(client, MNEMONIC)
+                    wallet, _, _, _ = WalletV4R2.from_mnemonic(client, MNEMONIC)
                     wallet_address = wallet.address.to_str(is_bounceable=False)
                     c.telegram.bot.send_message(
                         chat_id,
