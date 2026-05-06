@@ -1541,6 +1541,7 @@ def update_settings_panel(c: Cardinal, chat_id: int, message_id: int):
         InlineKeyboardButton(text="🍪 Куки", callback_data="edit_cookie"),
         InlineKeyboardButton(text="🔐 Мнемоника", callback_data="edit_mnemonic"),
         InlineKeyboardButton(text="👤 User ID", callback_data="edit_user_id"),
+        InlineKeyboardButton(text="💳 Адрес кошелька", callback_data="show_wallet_address"),
         InlineKeyboardButton(
             text=f"🤖 Возврат: {'Авто' if config['AUTO_REFUND'] else 'Ручной'}",
             callback_data="toggle_refund"
@@ -1644,7 +1645,8 @@ def init_commands(c: Cardinal):
     @c.telegram.bot.callback_query_handler(func=lambda call: call.data in [
         "toggle_autosale", "toggle_lots", "send_logs", "open_settings", "edit_hash",
         "edit_cookie", "edit_mnemonic", "toggle_refund", "back_to_main", "cancel",
-        "edit_user_id", "daily_stats", "toggle_sender", "toggle_balance_format"
+        "edit_user_id", "daily_stats", "toggle_sender", "toggle_balance_format",
+        "show_wallet_address"
     ])
     def handle_config_callback(call):
         global RUNNING, SHOW_SENDER
@@ -1878,6 +1880,27 @@ def init_commands(c: Cardinal):
                     c.telegram.bot.remove_message_handler(handle_new_user_id)
 
                 c.telegram.bot.register_next_step_handler(call.message, handle_new_user_id)
+
+            elif data == "show_wallet_address":
+                try:
+                    from tonutils.client import TonapiClient
+                    from tonutils.wallet import WalletV5R1
+                    client = TonapiClient(api_key=API_KEY, is_testnet=IS_TESTNET)
+                    wallet, _, _, _ = WalletV5R1.from_mnemonic(client, MNEMONIC)
+                    wallet_address = wallet.address.to_str(is_bounceable=False)
+                    c.telegram.bot.send_message(
+                        chat_id,
+                        sanitize_telegram_text(
+                            f"💳 Адрес вашего TON-кошелька:\n\n<code>{wallet_address}</code>\n\n"
+                            "Отправьте TON на этот адрес для пополнения баланса."
+                        ),
+                        parse_mode="HTML"
+                    )
+                except Exception as _addr_err:
+                    c.telegram.bot.send_message(
+                        chat_id,
+                        sanitize_telegram_text(f"❌ Ошибка получения адреса: {_addr_err}")
+                    )
 
             elif data == "back_to_main":
                 update_config_panel(c, chat_id, message_id)
