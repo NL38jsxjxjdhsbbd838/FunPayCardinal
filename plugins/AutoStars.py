@@ -361,7 +361,13 @@ def update_stats(success: bool, quantity: int):
 async def check_wallet_balance() -> float:
     client = TonapiClient(api_key=API_KEY, is_testnet=IS_TESTNET)
     wallet, public_key, private_key, mnemonic = WalletV5R1.from_mnemonic(client, MNEMONIC)
-    balance_nano = await wallet.balance()
+    try:
+        balance_nano = await wallet.balance()
+    except Exception as e:
+        if "404" in str(e) or "entity not found" in str(e).lower():
+            logger.debug("Кошелёк ещё не развёрнут в блокчейне (нет транзакций). Баланс: 0.0 TON")
+            return 0
+        raise
     if config["USE_OLD_BALANCE"]:
         balance_ton = balance_nano
     else:
@@ -373,9 +379,10 @@ async def check_wallet_balance() -> float:
 async def send_ton_transaction(amount: float, comment: str, destination_address: str) -> Tuple[Optional[str], Optional[str], Optional[str]]:
     client = TonapiClient(api_key=API_KEY, is_testnet=IS_TESTNET)
     wallet, public_key, private_key, mnemonic = WalletV5R1.from_mnemonic(client, MNEMONIC)
-    balance_ton = await check_wallet_balance()
+    balance_nano = await check_wallet_balance()
+    balance_ton = balance_nano / 1_000_000_000
     if balance_ton < amount:
-        error_msg = f"Недостаточно средств на кошельке. Требуется: {amount} TON, доступно: {balance_ton} TON."
+        error_msg = f"Недостаточно средств на кошельке. Требуется: {amount} TON, доступно: {balance_ton:.4f} TON."
         logger.warning(error_msg)
         return None, None, error_msg
 
