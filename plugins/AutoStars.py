@@ -359,14 +359,15 @@ def update_stats(success: bool, quantity: int):
 
 
 async def check_wallet_balance() -> float:
+    import aiohttp as _aiohttp
     client = TonapiClient(api_key=API_KEY, is_testnet=IS_TESTNET)
     wallet, public_key, private_key, mnemonic = WalletV4R2.from_mnemonic(client, MNEMONIC)
     address = wallet.address.to_str(is_bounceable=False)
     try:
         net = "testnet." if IS_TESTNET else ""
         url = f"https://{net}toncenter.com/api/v2/getAddressInformation?address={address}"
-        async with aiohttp.ClientSession() as session:
-            async with session.get(url, timeout=aiohttp.ClientTimeout(total=10)) as resp:
+        async with _aiohttp.ClientSession() as session:
+            async with session.get(url, timeout=_aiohttp.ClientTimeout(total=10)) as resp:
                 data = await resp.json()
         if data.get("ok"):
             balance_nano = int(data["result"]["balance"])
