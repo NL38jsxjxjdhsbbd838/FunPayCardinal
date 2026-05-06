@@ -642,17 +642,24 @@ class PaymentProcessor:
                             logger.error(
                                 f"Превышено количество попыток ({max_retries}) для заказа {orderID} из-за ошибки 406.")
                             update_stats(False, stars_quantity)
-                            # Покупателю — только универсальное сообщение
                             c.send_message(buyer_chat_id, sanitize_telegram_text(
                                 "❌ Ваш заказ не выполнен. Деньги возвращены. Пожалуйста, свяжитесь с поддержкой."))
                             if config["AUTO_REFUND"]:
-                                c.account.refund(orderID)
-                                c.telegram.bot.send_message(USER_ID, sanitize_telegram_text(
-                                    f'Вернул пользователю: {username} деньги по причине: {error}'))
+                                try:
+                                    c.account.refund(orderID)
+                                except Exception:
+                                    pass
+                                try:
+                                    c.telegram.bot.send_message(USER_ID, sanitize_telegram_text(
+                                        f'Вернул пользователю: {username} деньги по причине: {error}'))
+                                except Exception:
+                                    pass
                             else:
-                                send_error_with_inline_url(c, USER_ID, orderID, error)
+                                try:
+                                    send_error_with_inline_url(c, USER_ID, orderID, error)
+                                except Exception:
+                                    pass
                             logger.error(f"[AUTO_STARS] Критическая ошибка: {error} (orderID={orderID})")
-                            deactivate_all_lots(c, SUBCATEGORY_ID)
                             return
                     elif 'No Telegram users found' in error:
                         logger.info(f"Username {username} не найден для пользователя {buyer_chat_id}")
@@ -662,11 +669,9 @@ class PaymentProcessor:
                                 o['username'] = None
                                 o['confirmed'] = False
                                 break
-                        # Покупателю — только просьба ввести корректный username
                         c.send_message(buyer_chat_id, sanitize_telegram_text(
                             "❌ Указанный вами username не найден в Telegram. Пожалуйста, введите корректный @username для получения Stars."))
                         logger.error(f"[AUTO_STARS] Ошибка: {error} (orderID={orderID})")
-                        deactivate_all_lots(c, SUBCATEGORY_ID)
                         return
                     elif 'Не удалось декодировать JSON' in error:
                         logger.error(f"Платёж не удался для {username}: {error}")
@@ -689,30 +694,64 @@ class PaymentProcessor:
                         c.send_message(buyer_chat_id, sanitize_telegram_text(
                             "❌ Ваш заказ не выполнен. Деньги возвращены. Пожалуйста, свяжитесь с поддержкой."))
                         logger.error(f"[AUTO_STARS] Критическая ошибка: {error} (orderID={orderID})")
-                        deactivate_all_lots(c, SUBCATEGORY_ID)
                         return
                     elif 'Недостаточно средств на кошельке' in error:
                         # Покупателю — только инфо о возврате
                         c.send_message(buyer_chat_id, sanitize_telegram_text(
                             "❌ На кошельке продавца недостаточно средств. Ваши деньги возвращены."))
-                        c.account.refund(orderID)
-                        c.telegram.bot.send_message(USER_ID, sanitize_telegram_text(
-                            f'Вернул пользователю: {username} деньги по причине: {error}'))
+                        try:
+                            c.account.refund(orderID)
+                        except Exception:
+                            pass
+                        try:
+                            c.telegram.bot.send_message(USER_ID, sanitize_telegram_text(
+                                f'Вернул пользователю: {username} деньги по причине: {error}'))
+                        except Exception:
+                            pass
                         logger.error(f"[AUTO_STARS] Недостаточно средств: {error} (orderID={orderID})")
                         deactivate_all_lots(c, SUBCATEGORY_ID)
+                        return
+                    elif 'Access denied' in error or 'Access Denied' in error:
+                        # Fragment API отказал — скорее всего истёк stel_ton_token. Останавливаем, не деактивируем лоты.
+                        global RUNNING
+                        RUNNING = False
+                        update_stats(False, stars_quantity)
+                        c.send_message(buyer_chat_id, sanitize_telegram_text(
+                            "❌ Ваш заказ не выполнен. Деньги возвращены. Пожалуйста, свяжитесь с поддержкой."))
+                        if config["AUTO_REFUND"]:
+                            try:
+                                c.account.refund(orderID)
+                            except Exception:
+                                pass
+                        try:
+                            c.telegram.bot.send_message(USER_ID, sanitize_telegram_text(
+                                "⚠️ Автопродажа Stars остановлена: Fragment вернул 'Access denied'.\n"
+                                "Необходимо обновить cookie Fragment (stel_ton_token истёк).\n"
+                                "Зайдите на fragment.com/stars/buy, подключите Tonkeeper и обновите куки через /stars_config → Настройки → 🍪 Куки"))
+                        except Exception:
+                            pass
+                        logger.error(f"[AUTO_STARS] Fragment Access denied — RUNNING остановлен (orderID={orderID})")
                         return
                     else:
                         update_stats(False, stars_quantity)
                         c.send_message(buyer_chat_id,
                                        sanitize_telegram_text("❌ Ваш заказ не выполнен. Деньги возвращены. Пожалуйста, свяжитесь с поддержкой."))
                         if config["AUTO_REFUND"]:
-                            c.account.refund(orderID)
-                            c.telegram.bot.send_message(USER_ID, sanitize_telegram_text(
-                                f'Вернул пользователю: {username} деньги по причине: {error}'))
+                            try:
+                                c.account.refund(orderID)
+                            except Exception:
+                                pass
+                            try:
+                                c.telegram.bot.send_message(USER_ID, sanitize_telegram_text(
+                                    f'Вернул пользователю: {username} деньги по причине: {error}'))
+                            except Exception:
+                                pass
                         else:
-                            send_error_with_inline_url(c, USER_ID, orderID, error)
+                            try:
+                                send_error_with_inline_url(c, USER_ID, orderID, error)
+                            except Exception:
+                                pass
                         logger.error(f"[AUTO_STARS] Критическая ошибка: {error} (orderID={orderID})")
-                        deactivate_all_lots(c, SUBCATEGORY_ID)
                         return
 
                 found_success = False
@@ -748,18 +787,25 @@ class PaymentProcessor:
                     check_error = check_error or "Не удалось получить подтверждение транзакции после 15 попыток."
                     logger.error(check_error)
                     update_stats(False, stars_quantity)
-                    # Покупателю — только универсальное сообщение
                     c.send_message(buyer_chat_id, sanitize_telegram_text(
                         "❌ Ваш заказ не выполнен. Деньги возвращены. Пожалуйста, свяжитесь с поддержкой."))
                     if config["AUTO_REFUND"]:
-                        c.account.refund(orderID)
-                        c.telegram.bot.send_message(USER_ID, sanitize_telegram_text(
-                            f'Вернул пользователю: {username} деньги по причине: {check_error}'))
+                        try:
+                            c.account.refund(orderID)
+                        except Exception:
+                            pass
+                        try:
+                            c.telegram.bot.send_message(USER_ID, sanitize_telegram_text(
+                                f'Вернул пользователю: {username} деньги по причине: {check_error}'))
+                        except Exception:
+                            pass
                     else:
-                        c.telegram.bot.send_message(USER_ID, sanitize_telegram_text(
-                            f"У вас произошла ошибка с пользователем: https://funpay.com/orders/{orderID}/\nОшибка: {check_error}\nПросьба вернуть средства"))
+                        try:
+                            c.telegram.bot.send_message(USER_ID, sanitize_telegram_text(
+                                f"У вас произошла ошибка с пользователем: https://funpay.com/orders/{orderID}/\nОшибка: {check_error}\nПросьба вернуть средства"))
+                        except Exception:
+                            pass
                     logger.error(f"[AUTO_STARS] Критическая ошибка: {check_error} (orderID={orderID})")
-                    deactivate_all_lots(c, SUBCATEGORY_ID)
                     return
 
                 logger.info(f"Платёж успешен для {username}: TX Hash: {tx_hash}, Ref ID: {ref_id}, Qty: {quantity}")
@@ -816,7 +862,6 @@ class PaymentProcessor:
                 except Exception as send_error:
                     logger.error(f"Не удалось отправить сообщение об ошибке пользователю {buyer_chat_id}: {send_error}")
                 logger.error(f"[AUTO_STARS] Критическая ошибка: {e} (orderID={orderID})")
-                deactivate_all_lots(c, SUBCATEGORY_ID)
                 break
 
         logger.error(f"Превышено количество попыток ({max_retries}) для заказа {orderID}.")
@@ -825,13 +870,21 @@ class PaymentProcessor:
         c.send_message(buyer_chat_id, sanitize_telegram_text(
             "❌ Не удалось выполнить транзакцию после нескольких попыток. Деньги возвращены. Пожалуйста, свяжитесь с поддержкой."))
         if config["AUTO_REFUND"]:
-            c.account.refund(orderID)
-            c.telegram.bot.send_message(USER_ID, sanitize_telegram_text(
-                f'Вернул пользователю: {username} деньги по причине: Превышено количество попыток'))
+            try:
+                c.account.refund(orderID)
+            except Exception:
+                pass
+            try:
+                c.telegram.bot.send_message(USER_ID, sanitize_telegram_text(
+                    f'Вернул пользователю: {username} деньги по причине: Превышено количество попыток'))
+            except Exception:
+                pass
         else:
-            send_error_with_inline_url(c, USER_ID, orderID, "Превышено количество попыток выполнения транзакции")
+            try:
+                send_error_with_inline_url(c, USER_ID, orderID, "Превышено количество попыток выполнения транзакции")
+            except Exception:
+                pass
         logger.error(f"[AUTO_STARS] Критическая ошибка: Превышено количество попыток (orderID={orderID})")
-        deactivate_all_lots(c, SUBCATEGORY_ID)
 
 
 payment_processor: "PaymentProcessor | None" = None
