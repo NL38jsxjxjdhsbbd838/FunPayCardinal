@@ -418,28 +418,49 @@ def update_stats(success: bool, quantity: int):
     save_stats(stats_data)
 
 
-async def check_wallet_balance() -> float:
+async def check_wallet_balance() -> int:
+    """Возвращает баланс кошелька в наноТОН. Бросает исключение если оба источника недоступны."""
     import aiohttp as _aiohttp
     client = TonapiClient(api_key=API_KEY, is_testnet=IS_TESTNET)
     wallet, public_key, private_key, mnemonic = WalletV4R2.from_mnemonic(client, MNEMONIC)
     address = wallet.address.to_str(is_bounceable=False)
+    net = "testnet." if IS_TESTNET else ""
+
+    # Источник 1: tonapi.io (использует API_KEY, более надёжный)
     try:
-        net = "testnet." if IS_TESTNET else ""
-        url = f"https://{net}toncenter.com/api/v2/getAddressInformation?address={address}"
+        tonapi_url = f"https://{'testnet.' if IS_TESTNET else ''}tonapi.io/v2/accounts/{address}"
+        tonapi_headers = {"Authorization": f"Bearer {API_KEY}"}
         async with _aiohttp.ClientSession() as session:
-            async with session.get(url, timeout=_aiohttp.ClientTimeout(total=10)) as resp:
+            async with session.get(tonapi_url, headers=tonapi_headers,
+                                   timeout=_aiohttp.ClientTimeout(total=10)) as resp:
+                if resp.status == 200:
+                    data = await resp.json()
+                    balance_nano = int(data.get("balance", 0))
+                    balance_ton = balance_nano / 1_000_000_000
+                    logger.debug(f"Баланс кошелька ({address}): {balance_ton:.6f} TON [tonapi]")
+                    return balance_nano
+                else:
+                    logger.warning(f"tonapi вернул статус {resp.status}")
+    except Exception as e:
+        logger.warning(f"Ошибка получения баланса через tonapi: {e}")
+
+    # Источник 2: toncenter.com (публичный, без ключа)
+    try:
+        toncenter_url = f"https://{net}toncenter.com/api/v2/getAddressInformation?address={address}"
+        async with _aiohttp.ClientSession() as session:
+            async with session.get(toncenter_url, timeout=_aiohttp.ClientTimeout(total=10)) as resp:
                 data = await resp.json()
         if data.get("ok"):
             balance_nano = int(data["result"]["balance"])
             balance_ton = balance_nano / 1_000_000_000
-            logger.debug(f"Баланс кошелька ({address}): {balance_ton:.6f} TON")
+            logger.debug(f"Баланс кошелька ({address}): {balance_ton:.6f} TON [toncenter]")
             return balance_nano
         else:
             logger.warning(f"toncenter вернул ошибку: {data}")
-            return 0
     except Exception as e:
         logger.warning(f"Ошибка получения баланса через toncenter: {e}")
-        return 0
+
+    raise RuntimeError(f"Не удалось получить баланс кошелька {address} — оба источника (tonapi, toncenter) недоступны")
 
 
 async def send_ton_transaction(amount: float, comment: str, destination_address: str) -> Tuple[Optional[str], Optional[str], Optional[str]]:
@@ -1325,14 +1346,18 @@ def activate_lots(c: Cardinal, chat_id: int):
             # Добавляем небольшую задержку между запросами
             time.sleep(1)
         except FunPayAPI.common.exceptions.RequestFailedError as e:
-            if '429' in str(e):
+            if e.status_code == 429 or '429' in e.short_str():
                 logger.warning(f"Достигнут лимит запросов к FunPay API (429) при активации лота {lot_id}")
                 errors.append((lot_id, "Превышен лимит запросов (429)"))
                 rate_limited = True
+            elif e.status_code == 200:
+                hint = "Ошибка авторизации (статус 200) — возможно, истёк FUNPAY_GOLDEN_KEY"
+                logger.warning(f"[AutoStars] {hint} для лота {lot_id}")
+                errors.append((lot_id, hint))
             else:
-                errors.append((lot_id, str(e)))
+                errors.append((lot_id, e.short_str()))
         except Exception as e:
-            errors.append((lot_id, str(e)))
+            errors.append((lot_id, truncate_error(str(e))))
 
     report = "✅ **Активация лотов завершена.**\n\n"
     if activated_lots:
@@ -1389,14 +1414,18 @@ def deactivate_lots(c: Cardinal, chat_id: int):
             # Увеличиваем задержку между запросами
             time.sleep(2)
         except FunPayAPI.common.exceptions.RequestFailedError as e:
-            if '429' in str(e):
+            if e.status_code == 429 or '429' in e.short_str():
                 logger.warning(f"Достигнут лимит запросов к FunPay API (429) при деактивации лота {lot_id}")
                 errors.append((lot_id, "Превышен лимит запросов (429)"))
                 rate_limited = True
+            elif e.status_code == 200:
+                hint = "Ошибка авторизации (статус 200) — возможно, истёк FUNPAY_GOLDEN_KEY"
+                logger.warning(f"[AutoStars] {hint} для лота {lot_id}")
+                errors.append((lot_id, hint))
             else:
-                errors.append((lot_id, str(e)))
+                errors.append((lot_id, e.short_str()))
         except Exception as e:
-            errors.append((lot_id, str(e)))
+            errors.append((lot_id, truncate_error(str(e))))
 
     report = "✅ **Деактивация лотов завершена.**\n\n"
     if deactivated_lots:
@@ -1482,13 +1511,16 @@ async def get_wallet_balance():
     try:
         balance_nano = await check_wallet_balance()
         if config["USE_OLD_BALANCE"]:
-            return f"{balance_nano} (старый формат)"
+            return f"{balance_nano} нТОН (старый формат)"
         else:
             balance_ton = balance_nano / 1_000_000_000
-            return f"{balance_ton:.2f} TON"
+            return f"{balance_ton:.4f} TON"
+    except RuntimeError as e:
+        logger.error(f"Ошибка получения баланса (оба источника): {e}")
+        return "❌ Недоступен (нет связи с tonapi/toncenter)"
     except Exception as e:
         logger.error(f"Ошибка при получении баланса: {e}")
-        return "Неизвестно"
+        return f"❌ Ошибка: {truncate_error(str(e), 80)}"
 
 
 def stars_config(c: Cardinal, m: types.Message):
@@ -1513,13 +1545,16 @@ def stars_config(c: Cardinal, m: types.Message):
         except Exception as lots_err:
             logger.error(f"Ошибка при обработке лотов: {lots_err}")
 
-        balance_text = "Недоступно"
+        balance_text = "⏳ Загрузка..."
         if payment_processor is not None:
             try:
                 balance_future = asyncio.run_coroutine_threadsafe(get_wallet_balance(), payment_processor.loop)
-                balance_text = balance_future.result(timeout=10)
+                balance_text = balance_future.result(timeout=25)
             except Exception as _bal_err:
+                balance_text = f"❌ Таймаут/ошибка: {truncate_error(str(_bal_err), 60)}"
                 logger.error(f"Ошибка получения баланса: {_bal_err}")
+        else:
+            balance_text = "❌ PaymentProcessor не запущен"
 
         activation_status = "🟢 Активирован"
 
@@ -1547,11 +1582,7 @@ def stars_config(c: Cardinal, m: types.Message):
             f"<b>Активация:</b> {_html.escape(str(activation_status))}\n"
             f"<b>Статус:</b> {_html.escape(str(status_text))}\n"
             f"<b>Лоты:</b> {_html.escape(str(lots_text))}\n"
-            f"<b>💰 Баланс:</b> {_html.escape(str(balance_text))}\n\n"
-            "💡 <b>Проблемы с отображением баланса?</b>\n"
-            "Если баланс отображается некорректно (например, 2.35e-10 TON), переключите формат баланса:\n"
-            "⚙️ Настройки → 💰 Баланс → выберите 'Старый формат'.\n"
-            "Если проблема не решена, проверьте seed-фразу в настройках.\n\n"
+            f"<b>💰 Баланс:</b> {_html.escape(str(balance_text))}\n"
             "────────────────────\n"
             "Выберите действие ниже:"
         )
@@ -1594,13 +1625,16 @@ def update_config_panel(c: Cardinal, chat_id: int, message_id: int):
         except Exception as lots_err:
             logger.error(f"Ошибка при обработке лотов: {lots_err}")
 
-        balance_text = "Недоступно"
+        balance_text = "⏳ Загрузка..."
         if payment_processor is not None:
             try:
                 balance_future = asyncio.run_coroutine_threadsafe(get_wallet_balance(), payment_processor.loop)
-                balance_text = balance_future.result(timeout=10)
+                balance_text = balance_future.result(timeout=25)
             except Exception as _bal_err:
+                balance_text = f"❌ Таймаут/ошибка: {truncate_error(str(_bal_err), 60)}"
                 logger.error(f"Ошибка получения баланса: {_bal_err}")
+        else:
+            balance_text = "❌ PaymentProcessor не запущен"
 
         activation_status = "🟢 Активирован"
 
