@@ -7,6 +7,10 @@ if [ -f "/opt/venv/bin/activate" ]; then
   . /opt/venv/bin/activate
 fi
 
+# Force correct tonutils version (plugin requires 0.5.8, newer versions renamed tonutils.client)
+echo "[start.sh] Ensuring tonutils==0.5.8..."
+pip install "tonutils==0.5.8" --quiet --force-reinstall 2>/dev/null || true
+
 # Generate configs/_main.cfg from environment variables (skips interactive first_setup)
 if [ ! -f "configs/_main.cfg" ]; then
   echo "[start.sh] No configs/_main.cfg found — generating from environment variables..."
