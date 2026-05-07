@@ -7,9 +7,16 @@ if [ -f "/opt/venv/bin/activate" ]; then
   . /opt/venv/bin/activate
 fi
 
-# Force correct tonutils version (plugin requires 0.5.8, newer versions renamed tonutils.client)
-echo "[start.sh] Ensuring tonutils==0.5.8..."
-pip install "tonutils==0.5.8" --quiet --force-reinstall 2>/dev/null || true
+# Check and fix tonutils version (plugin requires 0.5.8, newer versions renamed tonutils.client)
+TONUTILS_VER=$(python -c "import importlib.metadata; print(importlib.metadata.version('tonutils'))" 2>/dev/null || echo "none")
+echo "[start.sh] tonutils installed: $TONUTILS_VER"
+if [ "$TONUTILS_VER" != "0.5.8" ]; then
+  echo "[start.sh] Installing tonutils==0.5.8..."
+  pip install "tonutils==0.5.8" --quiet --no-deps 2>/dev/null || true
+  echo "[start.sh] tonutils==0.5.8 installed."
+else
+  echo "[start.sh] tonutils==0.5.8 already correct, skipping."
+fi
 
 # Generate configs/_main.cfg from environment variables (skips interactive first_setup)
 if [ ! -f "configs/_main.cfg" ]; then
