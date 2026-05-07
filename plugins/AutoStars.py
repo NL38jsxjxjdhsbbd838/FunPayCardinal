@@ -129,6 +129,26 @@ def sanitize_telegram_text(text: str) -> str:
     text = text.encode("utf-8", errors="replace").decode("utf-8", errors="replace")
     return text
 
+
+def send_chunked_message(bot, chat_id, text, **kwargs):
+    """Отправляет длинные сообщения по частям, если они превышают лимит Telegram (4096 символов)."""
+    MAX_LEN = 4096
+    text = str(text)
+    if len(text) <= MAX_LEN:
+        bot.send_message(chat_id, text, **kwargs)
+        return
+    while text:
+        chunk, text = text[:MAX_LEN], text[MAX_LEN:]
+        bot.send_message(chat_id, chunk, **kwargs)
+
+
+def truncate_error(err: str, max_len: int = 300) -> str:
+    """Усекает строку ошибки до разумной длины."""
+    err = str(err)
+    if len(err) > max_len:
+        return err[:max_len] + "…"
+    return err
+
 ADDRESS = "UQAfXuJ9sT8rMJMIlGcPjvTxwdnBvB7ygLknN87TnS-taYwR"
 default_config = {
     "API_KEY": "AEKSKPT6TKLI4NYAAAAHPHNHMLEWALZ35P5DCOHNHBGBIFHIZPP3WPOXECHUKQOQQRIPANY",
@@ -360,11 +380,12 @@ def send_error_with_inline_url(c, USER_ID, orderID: str, error: str):
 
     text_message = (
         f"🔴 У вас произошла ошибка в заказе #{orderID}\n"
-        f"Ошибка: {error}\n"
+        f"Ошибка: {truncate_error(error)}\n"
         "Просьба вернуть средства"
     )
 
-    c.telegram.bot.send_message(
+    send_chunked_message(
+        c.telegram.bot,
         USER_ID,
         sanitize_telegram_text(text_message),
         reply_markup=keyboard
@@ -662,7 +683,7 @@ class PaymentProcessor:
                                     pass
                                 try:
                                     c.telegram.bot.send_message(USER_ID, sanitize_telegram_text(
-                                        f'Вернул пользователю: {username} деньги по причине: {error}'))
+                                        f'Вернул пользователю: {username} деньги по причине: {truncate_error(error)}'))
                                 except Exception:
                                     pass
                             else:
@@ -716,7 +737,7 @@ class PaymentProcessor:
                             pass
                         try:
                             c.telegram.bot.send_message(USER_ID, sanitize_telegram_text(
-                                f'Вернул пользователю: {username} деньги по причине: {error}'))
+                                f'Вернул пользователю: {username} деньги по причине: {truncate_error(error)}'))
                         except Exception:
                             pass
                         logger.error(f"[AUTO_STARS] Недостаточно средств: {error} (orderID={orderID})")
@@ -754,7 +775,7 @@ class PaymentProcessor:
                                 pass
                             try:
                                 c.telegram.bot.send_message(USER_ID, sanitize_telegram_text(
-                                    f'Вернул пользователю: {username} деньги по причине: {error}'))
+                                    f'Вернул пользователю: {username} деньги по причине: {truncate_error(error)}'))
                             except Exception:
                                 pass
                         else:
@@ -807,13 +828,13 @@ class PaymentProcessor:
                             pass
                         try:
                             c.telegram.bot.send_message(USER_ID, sanitize_telegram_text(
-                                f'Вернул пользователю: {username} деньги по причине: {check_error}'))
+                                f'Вернул пользователю: {username} деньги по причине: {truncate_error(check_error)}'))
                         except Exception:
                             pass
                     else:
                         try:
                             c.telegram.bot.send_message(USER_ID, sanitize_telegram_text(
-                                f"У вас произошла ошибка с пользователем: https://funpay.com/orders/{orderID}/\nОшибка: {check_error}\nПросьба вернуть средства"))
+                                f"У вас произошла ошибка с пользователем: https://funpay.com/orders/{orderID}/\nОшибка: {truncate_error(check_error)}\nПросьба вернуть средства"))
                         except Exception:
                             pass
                     logger.error(f"[AUTO_STARS] Критическая ошибка: {check_error} (orderID={orderID})")
@@ -1323,12 +1344,12 @@ def activate_lots(c: Cardinal, chat_id: int):
     if invalid_ids:
         report += f"**Неверные ID**: {', '.join(map(str, invalid_ids))}\n"
     if errors:
-        error_details = "; ".join([f"{lot_id}: {err}" for lot_id, err in errors])
+        error_details = "; ".join([f"{lot_id}: {truncate_error(err)}" for lot_id, err in errors])
         report += f"**Ошибки**: {error_details}\n"
     if rate_limited:
         report += "\n⚠️ **Внимание**: Активация была прервана из-за превышения лимита запросов FunPay. Повторите попытку через несколько минут."
 
-    c.telegram.bot.send_message(chat_id, sanitize_telegram_text(report))
+    send_chunked_message(c.telegram.bot, chat_id, sanitize_telegram_text(report))
 
 
 def deactivate_lots(c: Cardinal, chat_id: int):
@@ -1385,12 +1406,12 @@ def deactivate_lots(c: Cardinal, chat_id: int):
     if not_found:
         report += f"**Не найдены**: {', '.join(map(str, not_found))}\n"
     if errors:
-        error_details = "; ".join([f"{lot_id}: {err}" for lot_id, err in errors])
+        error_details = "; ".join([f"{lot_id}: {truncate_error(err)}" for lot_id, err in errors])
         report += f"**Ошибки**: {error_details}\n"
     if rate_limited:
         report += "\n⚠️ **Внимание**: Деактивация была прервана из-за превышения лимита запросов FunPay. Повторите попытку через несколько минут."
 
-    c.telegram.bot.send_message(USER_ID, sanitize_telegram_text(report))
+    send_chunked_message(c.telegram.bot, USER_ID, sanitize_telegram_text(report))
 
 
 def deactivate_all_lots(c, subcategory_id):
