@@ -1,0 +1,67 @@
+{"message":"[07-05-2026 20:01:11]> I: Загружаю конфиг _main.cfg...","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T20:01:11.409322443Z"}
+{"message":"[07-05-2026 20:01:11]> I: Загружаю конфиг auto_response.cfg...","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T20:01:11.409326264Z"}
+{"message":"[07-05-2026 20:01:11]> I: Загружаю конфиг auto_delivery.cfg...","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T20:01:11.410239633Z"}
+{"message":"[07-05-2026 20:01:11]> I: Хэндлеры из handlers.py зарегистрированы.","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T20:01:11.410246211Z"}
+{"message":"[07-05-2026 20:01:11]> I: Хэндлеры из announcements.py зарегистрированы.","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T20:01:11.410250760Z"}
+{"message":"[07-05-2026 20:01:12]> I: Хэндлеры из tg_bot.proxy_cp.py зарегистрированы.","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T20:01:12.199105280Z"}
+{"message":"[07-05-2026 20:01:12]> I: Хэндлеры из tg_bot.default_cp.py зарегистрированы.","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T20:01:12.199114339Z"}
+{"message":"2026-05-07 20:01:12,102 - FPC.autostars - DEBUG - Асинхронный цикл PaymentProcessor запущен.","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T20:01:12.199122917Z"}
+{"message":"[07-05-2026 20:01:12]> I: Хэндлеры из plugins.AutoStars.py зарегистрированы.","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T20:01:12.199146306Z"}
+{"message":"[07-05-2026 20:01:12]> I: Telegram бот инициализирован.","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T20:01:12.199156032Z"}
+{"message":"[07-05-2026 20:01:12]> I: Хэндлеры из tg_bot.auto_response_cp.py зарегистрированы.","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T20:01:12.199163535Z"}
+{"message":"[07-05-2026 20:01:12]> I: Хэндлеры из tg_bot.auto_delivery_cp.py зарегистрированы.","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T20:01:12.199170813Z"}
+{"message":"[07-05-2026 20:01:12]> I: Хэндлеры из tg_bot.config_loader_cp.py зарегистрированы.","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T20:01:12.199178870Z"}
+{"message":"[07-05-2026 20:01:12]> I: Хэндлеры из tg_bot.templates_cp.py зарегистрированы.","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T20:01:12.199185837Z"}
+{"message":"[07-05-2026 20:01:12]> I: Хэндлеры из tg_bot.plugins_cp.py зарегистрированы.","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T20:01:12.199192798Z"}
+{"message":"[07-05-2026 20:01:12]> I: Хэндлеры из tg_bot.file_uploader.py зарегистрированы.","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T20:01:12.199200230Z"}
+{"message":"[07-05-2026 20:01:12]> I: Хэндлеры из tg_bot.authorized_users_cp.py зарегистрированы.","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T20:01:12.199208602Z"}
+{"message":"2026-05-07 20:01:12,102 - FPC.autostars - DEBUG - Поток PaymentProcessor запущен.","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T20:01:12.199691107Z"}
+{"message":"2026-05-07 20:01:12,102 - FPC.autostars - INFO - [AutoStars] PaymentProcessor успешно инициализирован.","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T20:01:12.199697683Z"}
+{"message":"[07-05-2026 20:01:12]> I: [AutoStars] PaymentProcessor успешно инициализирован.","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T20:01:12.199703642Z"}
+{"message":"2026-05-07 20:01:12,154 - FPC.autostars - INFO - [AutoStars] Fragment hash обновлён: 71045684dda1a6061f → ef3fe32ee9bd074a47","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T20:01:12.199709042Z"}
+{"message":"[07-05-2026 20:01:12]> I: [AutoStars] Fragment hash обновлён: 71045684dda1a6061f → ef3fe32ee9bd074a47","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T20:01:12.199714838Z"}
+{"message":"[07-05-2026 20:01:12]> I: Telegram бот @FunpaySazex_bot запущен.","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T20:01:12.442309240Z"}
+{"message":"[07-05-2026 20:01:13]> E: Произошла непредвиденная ошибка при получении данных аккаунта.","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T20:01:13.676116280Z"}
+{"message":"[07-05-2026 20:01:13]> W: Повторю попытку через 2 секунд(-у/-ы)...","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T20:01:13.676123711Z"}
+{"message":"[07-05-2026 20:01:16]> I: ","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T20:01:16.513995443Z"}
+{"message":"[07-05-2026 20:01:16]> I: ------------------------------------------------------------","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T20:01:16.514001088Z"}
+{"message":"[07-05-2026 20:01:16]> I: * Добрый вечер, Linaever.                                  *","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T20:01:16.514022278Z"}
+{"message":"[07-05-2026 20:01:16]> I: * Ваш ID: 2694790.                                         *","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T20:01:16.514028002Z"}
+{"message":"[07-05-2026 20:01:16]> I: * Ваш текущий баланс: 250.69 RUB | 0.0 USD | 0.0 EUR       *","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T20:01:16.514034191Z"}
+{"message":"[07-05-2026 20:01:16]> I: * Текущие незавершенные сделки: 30.                        *","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T20:01:16.514051133Z"}
+{"message":"[07-05-2026 20:01:16]> I: * Удачной торговли!                                        *","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T20:01:16.514057037Z"}
+{"message":"[07-05-2026 20:01:16]> I: ------------------------------------------------------------","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T20:01:16.514078886Z"}
+{"message":"[07-05-2026 20:01:16]> I: ","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T20:01:16.514085034Z"}
+{"message":"[07-05-2026 20:01:16]> I: Получаю данные о лотах и категориях...","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T20:01:16.514090770Z"}
+{"message":"[07-05-2026 20:01:16]> I: Обновил информацию о лотах (8) и категориях (8) профиля.","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T20:01:16.717730203Z"}
+{"message":"[07-05-2026 20:01:16]> I: Обновил информацию о лотах (8) и категориях (8) профиля (TG ПУ).","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T20:01:16.717735413Z"}
+{"message":"[07-05-2026 20:01:16]> I: Цикл автоподнятия лотов запущен (это не значит, что автоподнятие лотов включено).","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T20:01:16.717739296Z"}
+{"message":"[07-05-2026 20:01:16]> I: Цикл обновления сессии запущен.","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T20:01:16.719278718Z"}
+{"message":"[07-05-2026 20:01:40]> W: @L1naever (ID: 1653908370) нажимает кнопки ПУ в чате @L1naever (ID: 1653908370). У него ничего не выйдет!","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T20:01:46.717230312Z"}
+{"message":"[07-05-2026 20:01:48]> W: @L1naever (ID: 1653908370) получил доступ к ПУ.","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T20:01:48.952663872Z"}
+{"message":"[07-05-2026 20:01:54]> I: Получаю данные о лотах и категориях...","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T20:01:54.649214701Z"}
+{"message":"[07-05-2026 20:01:54]> I: Обновил информацию о лотах (8) и категориях (8) профиля (TG ПУ).","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T20:01:54.833824459Z"}
+{"message":"2026-05-07 20:01:54,955 - FPC.autostars - DEBUG - Баланс кошелька (UQAfXuJ9sT8rMJMIlGcPjvTxwdnBvB7ygLknN87TnS-taYwR): 0.000000 TON [tonapi]","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T20:01:54.961573693Z"}
+{"message":"2026-05-07 20:01:56,441 - FPC.autostars - ERROR - Ошибка декодирования JSON из файла storage/cache/auto_stars_id.json: Extra data: line 2 column 1 (char 11)","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T20:01:56.474006892Z"}
+{"message":"[07-05-2026 20:01:56]> E: Ошибка декодирования JSON из файла storage/cache/auto_stars_id.json: Extra data: line 2 column 1 (char 11)","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T20:01:56.474011789Z"}
+{"message":"[07-05-2026 20:01:56]> W: Произошла ошибка при отправке сообщения в чат 1653908370.","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T20:01:56.745072579Z"}
+{"message":"[07-05-2026 20:01:56]> I: Осталось попыток: 3.","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T20:01:56.745076712Z"}
+{"message":"[07-05-2026 20:01:57]> W: Произошла ошибка при отправке сообщения в чат 1653908370.","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T20:01:57.946474593Z"}
+{"message":"[07-05-2026 20:01:57]> I: Осталось попыток: 2.","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T20:01:57.948289849Z"}
+{"message":"[07-05-2026 20:01:59]> W: Произошла ошибка при отправке сообщения в чат 1653908370.","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T20:01:59.149790582Z"}
+{"message":"[07-05-2026 20:01:59]> I: Осталось попыток: 1.","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T20:01:59.149796693Z"}
+{"message":"[07-05-2026 20:02:00]> E: Не удалось отправить сообщение в чат 1653908370: превышено кол-во попыток.","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T20:02:00.152520906Z"}
+{"message":"[07-05-2026 20:02:01]> I: Получаю данные о лотах и категориях...","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T20:02:01.152860556Z"}
+{"message":"[07-05-2026 20:02:01]> I: Обновил информацию о лотах (8) и категориях (8) профиля (TG ПУ).","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T20:02:01.491865248Z"}
+{"message":"2026-05-07 20:02:01,488 - FPC.autostars - DEBUG - Баланс кошелька (UQAfXuJ9sT8rMJMIlGcPjvTxwdnBvB7ygLknN87TnS-taYwR): 0.000000 TON [tonapi]","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T20:02:01.491870570Z"}
+{"message":"[07-05-2026 20:02:07]> I: Получаю данные о лотах и категориях...","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T20:02:07.862437646Z"}
+{"message":"[07-05-2026 20:02:08]> I: Обновил информацию о лотах (8) и категориях (8) профиля (TG ПУ).","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T20:02:08.058820019Z"}
+{"message":"2026-05-07 20:02:08,261 - FPC.autostars - DEBUG - Баланс кошелька (UQAfXuJ9sT8rMJMIlGcPjvTxwdnBvB7ygLknN87TnS-taYwR): 0.000000 TON [tonapi]","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T20:02:08.273495005Z"}
+{"message":"[07-05-2026 20:02:51]> I: Обновил информацию о лотах (8) и категориях (8) профиля (TG ПУ).","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T20:02:58.296870902Z"}
+{"message":"2026-05-07 20:02:51,208 - FPC.autostars - DEBUG - Баланс кошелька (UQCEI0QT1tcDI1PtCDThbLl53Ol2dRsKURvaMBNUBcD8bhH1): 9.630209 TON [tonapi]","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T20:02:58.296879921Z"}
+{"message":"2026-05-07 20:02:54,524 - FPC.autostars - ERROR - Ошибка декодирования JSON из файла storage/cache/auto_stars_id.json: Extra data: line 2 column 1 (char 11)","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T20:02:58.296886862Z"}
+{"message":"[07-05-2026 20:02:54]> W: Произошла ошибка при отправке сообщения в чат 1653908370.","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T20:02:58.296899577Z"}
+{"message":"[07-05-2026 20:02:55]> I: Осталось попыток: 2.","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T20:02:58.296917690Z"}
+{"message":"[07-05-2026 20:02:57]> W: Произошла ошибка при отправке сообщения в чат 1653908370.","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T20:02:58.296923976Z"}
+{"message":"[07-05-2026 20:02:57]> I: Осталось попыток: 1.","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T20:02:58.296929300Z"}
+{"message":"[07-05-2026 20:02:58]> E: Не удалось отправить сообщение в чат 1653908370: превышено кол-во попыток.","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T20:02:58.296934616Z"}

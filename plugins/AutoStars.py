@@ -1386,7 +1386,7 @@ def activate_lots(c: Cardinal, chat_id: int):
     json_path = 'storage/cache/auto_stars_id.json'
     if not os.path.exists(json_path):
         logger.error(f"Файл {json_path} не найден.")
-        c.send_message(chat_id, sanitize_telegram_text(f"❌ Файл {json_path} не найден."))
+        c.telegram.bot.send_message(chat_id, sanitize_telegram_text(f"❌ Файл {json_path} не найден."))
         return
     try:
         with open(json_path, 'r', encoding='utf-8') as file:
@@ -1394,15 +1394,15 @@ def activate_lots(c: Cardinal, chat_id: int):
         logger.debug(f"Загруженные ID лотов: {lot_ids}")
     except json.JSONDecodeError as e:
         logger.error(f"Ошибка декодирования JSON из файла {json_path}: {e}")
-        c.send_message(chat_id, sanitize_telegram_text(f"❌ Ошибка декодирования JSON: {e}"))
+        c.telegram.bot.send_message(chat_id, sanitize_telegram_text(f"❌ Ошибка декодирования JSON: {e}"))
         return
     except Exception as e:
         logger.error(f"Не удалось прочитать файл {json_path}: {e}")
-        c.send_message(chat_id, sanitize_telegram_text(f"❌ Не удалось прочитать файл: {e}"))
+        c.telegram.bot.send_message(chat_id, sanitize_telegram_text(f"❌ Не удалось прочитать файл: {e}"))
         return
     if not isinstance(lot_ids, list):
         logger.error(f"Неверный формат данных в {json_path}. Ожидался список ID.")
-        c.send_message(chat_id, sanitize_telegram_text("❌ Неверный формат JSON."))
+        c.telegram.bot.send_message(chat_id, sanitize_telegram_text("❌ Неверный формат JSON."))
         return
     activated_lots = []
     already_active = []
@@ -1469,10 +1469,10 @@ def deactivate_lots(c: Cardinal, chat_id: int):
         subcategory = c.account.get_subcategory(FunPayAPI.types.SubCategoryTypes.COMMON, SUBCATEGORY_ID)
         my_lots = c.tg_profile.get_sorted_lots(2).get(subcategory, {})
     except Exception as e:
-        c.send_message(chat_id, sanitize_telegram_text(f"❌ Ошибка получения лотов: {e}"))
+        c.telegram.bot.send_message(chat_id, sanitize_telegram_text(f"❌ Ошибка получения лотов: {e}"))
         return
     if not my_lots:
-        c.send_message(chat_id, sanitize_telegram_text("ℹ️ Нет лотов для деактивации."))
+        c.telegram.bot.send_message(chat_id, sanitize_telegram_text("ℹ️ Нет лотов для деактивации."))
         return
     deactivated_lots = []
     already_inactive = []
