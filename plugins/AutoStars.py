@@ -125,7 +125,7 @@ CONFIG_FILE = "plugins/stars_config.json"
 
 
 def sanitize_telegram_text(text: str) -> str:
-    text = _html.escape(str(text))
+    text = str(text)
     text = text.encode("utf-8", errors="replace").decode("utf-8", errors="replace")
     return text
 
