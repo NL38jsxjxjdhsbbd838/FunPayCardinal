@@ -177,7 +177,8 @@ default_config = {
 """,
     "AUTO_REFUND": False,
     "SHOW_SENDER": "0",
-    "USE_OLD_BALANCE": False
+    "USE_OLD_BALANCE": False,
+    "PRICE_PER_STAR": 0.0
 }
 
 
@@ -213,6 +214,8 @@ def load_config() -> dict:
         config["SHOW_SENDER"] = default_config["SHOW_SENDER"]
     if "USE_OLD_BALANCE" not in config:
         config["USE_OLD_BALANCE"] = default_config["USE_OLD_BALANCE"]
+    if "PRICE_PER_STAR" not in config:
+        config["PRICE_PER_STAR"] = default_config["PRICE_PER_STAR"]
     with open(CONFIG_FILE, 'w', encoding='utf-8') as f:
         json.dump(config, f, indent=4, ensure_ascii=False)
     return config
@@ -232,6 +235,7 @@ ALLOWED_QUANTITIES = config["ALLOWED_QUANTITIES"]
 USER_ID = config["user_id"]
 COMPLETED_ORDER_MESSAGE = config["completed_order_message"]
 SHOW_SENDER = config["SHOW_SENDER"]
+PRICE_PER_STAR: float = float(config.get("PRICE_PER_STAR", 0.0))
 
 logger = logging.getLogger("FPC.autostars")
 logger.setLevel(logging.DEBUG)
@@ -1298,6 +1302,86 @@ def stars_auto(c: Cardinal, e, *args):
         handle_new_message_text(c, e, *args)
 
 
+def update_lots_prices(c: Cardinal, chat_id: int) -> str:
+    """Обновляет цены на всех лотах из auto_stars_id.json по формуле: кол-во звёзд × PRICE_PER_STAR."""
+    global PRICE_PER_STAR
+    if PRICE_PER_STAR <= 0:
+        return "❌ Курс не задан. Укажите цену за звезду в настройках."
+
+    json_path = 'storage/cache/auto_stars_id.json'
+    if not os.path.exists(json_path):
+        return f"❌ Файл {json_path} не найден."
+    try:
+        with open(json_path, 'r', encoding='utf-8') as f:
+            lot_ids: List[int] = json.load(f)
+    except Exception as e:
+        return f"❌ Ошибка чтения файла лотов: {e}"
+
+    if not isinstance(lot_ids, list) or not lot_ids:
+        return "❌ Список лотов пуст или неверный формат."
+
+    try:
+        c.update_lots_and_categories()
+        subcategory = c.account.get_subcategory(FunPayAPI.types.SubCategoryTypes.COMMON, SUBCATEGORY_ID)
+        my_lots = c.tg_profile.get_sorted_lots(2).get(subcategory, {})
+    except Exception as e:
+        return f"❌ Ошибка при получении лотов: {e}"
+
+    updated = []
+    skipped = []
+    errors = []
+
+    for lot_id in lot_ids:
+        if not isinstance(lot_id, int):
+            skipped.append(f"{lot_id} (не число)")
+            continue
+
+        # Определяем кол-во звёзд из описания лота
+        stars_count = None
+        lot = my_lots.get(lot_id)
+        if lot and lot.description:
+            m = re.search(r'(\d+)\s*(?:звёзд?|stars?)', lot.description, re.IGNORECASE)
+            if m:
+                stars_count = int(m.group(1))
+
+        if stars_count is None:
+            skipped.append(f"{lot_id} (не найдено кол-во звёзд)")
+            continue
+
+        new_price = round(stars_count * PRICE_PER_STAR, 2)
+        if new_price < 0.01:
+            skipped.append(f"{lot_id} (цена < 0.01)")
+            continue
+
+        try:
+            fields = c.account.get_lot_fields(lot_id)
+            if fields is None:
+                errors.append(f"{lot_id}: лот не найден")
+                continue
+            fields.price = new_price
+            c.account.save_lot(fields)
+            updated.append(f"{lot_id} ({stars_count}⭐ → {new_price} руб.)")
+            time.sleep(1)
+        except FunPayAPI.common.exceptions.RequestFailedError as e:
+            if '429' in str(e):
+                errors.append(f"{lot_id}: лимит запросов (429)")
+                break
+            errors.append(f"{lot_id}: {truncate_error(e.short_str())}")
+        except Exception as e:
+            errors.append(f"{lot_id}: {truncate_error(str(e))}")
+
+    report = f"💱 Обновление цен (курс: {PRICE_PER_STAR} руб/⭐)\n\n"
+    if updated:
+        report += "✅ Обновлены:\n" + "\n".join(f"  • {x}" for x in updated) + "\n\n"
+    if skipped:
+        report += "⏭ Пропущены:\n" + "\n".join(f"  • {x}" for x in skipped) + "\n\n"
+    if errors:
+        report += "❌ Ошибки:\n" + "\n".join(f"  • {x}" for x in errors) + "\n"
+    if not updated and not errors:
+        report += "Нет лотов для обновления."
+    return report.strip()
+
+
 def activate_lots(c: Cardinal, chat_id: int):
     json_path = 'storage/cache/auto_stars_id.json'
     if not os.path.exists(json_path):
@@ -1560,6 +1644,7 @@ def stars_config(c: Cardinal, m: types.Message):
 
         activation_status = "🟢 Активирован"
 
+        price_label = f"{PRICE_PER_STAR} руб./⭐" if PRICE_PER_STAR > 0 else "не задан"
         keyboard = InlineKeyboardMarkup(row_width=2)
         status_btn = InlineKeyboardButton(
             text=f"{'🟢 Вкл' if RUNNING else '🔴 Выкл'}",
@@ -1572,9 +1657,10 @@ def stars_config(c: Cardinal, m: types.Message):
         logs_btn = InlineKeyboardButton(text="📋 Логи", callback_data="send_logs")
         settings_btn = InlineKeyboardButton(text="⚙️ Настройки", callback_data="open_settings")
         stats_btn = InlineKeyboardButton(text="📊 Статистика", callback_data="daily_stats")
+        prices_btn = InlineKeyboardButton(text="💱 Обновить цены", callback_data="update_prices")
         keyboard.add(status_btn, lots_btn)
         keyboard.add(logs_btn, settings_btn)
-        keyboard.add(stats_btn)
+        keyboard.add(stats_btn, prices_btn)
 
         status_text = "🟢 Активна" if RUNNING else "🔴 Неактивна"
         lots_text = f"⚡️ Активных: {len(active_lots)}" if active_lots else "💤 Нет активных"
@@ -1585,6 +1671,7 @@ def stars_config(c: Cardinal, m: types.Message):
             f"<b>Статус:</b> {_html.escape(str(status_text))}\n"
             f"<b>Лоты:</b> {_html.escape(str(lots_text))}\n"
             f"<b>💰 Баланс:</b> {_html.escape(str(balance_text))}\n"
+            f"<b>💱 Курс:</b> {_html.escape(price_label)}\n"
             "────────────────────\n"
             "Выберите действие ниже:"
         )
@@ -1640,6 +1727,7 @@ def update_config_panel(c: Cardinal, chat_id: int, message_id: int):
 
         activation_status = "🟢 Активирован"
 
+        price_label = f"{PRICE_PER_STAR} руб./⭐" if PRICE_PER_STAR > 0 else "не задан"
         keyboard = InlineKeyboardMarkup(row_width=2)
         status_btn = InlineKeyboardButton(
             text=f"{'🟢 Вкл' if RUNNING else '🔴 Выкл'}",
@@ -1652,9 +1740,10 @@ def update_config_panel(c: Cardinal, chat_id: int, message_id: int):
         logs_btn = InlineKeyboardButton(text="📋 Логи", callback_data="send_logs")
         settings_btn = InlineKeyboardButton(text="⚙️ Настройки", callback_data="open_settings")
         stats_btn = InlineKeyboardButton(text="📊 Статистика", callback_data="daily_stats")
+        prices_btn = InlineKeyboardButton(text="💱 Обновить цены", callback_data="update_prices")
         keyboard.add(status_btn, lots_btn)
         keyboard.add(logs_btn, settings_btn)
-        keyboard.add(stats_btn)
+        keyboard.add(stats_btn, prices_btn)
 
         status_text = "🟢 Активна" if RUNNING else "🔴 Неактивна"
         lots_text = f"⚡️ Активных: {len(active_lots)}" if active_lots else "💤 Нет активных"
@@ -1665,6 +1754,7 @@ def update_config_panel(c: Cardinal, chat_id: int, message_id: int):
             f"<b>Статус:</b> {_html.escape(str(status_text))}\n"
             f"<b>Лоты:</b> {_html.escape(str(lots_text))}\n"
             f"<b>💰 Баланс:</b> {_html.escape(str(balance_text))}\n"
+            f"<b>💱 Курс:</b> {_html.escape(price_label)}\n"
             "────────────────────\n"
             "Выберите действие ниже:"
         )
@@ -1689,6 +1779,8 @@ def update_config_panel(c: Cardinal, chat_id: int, message_id: int):
 
 def update_settings_panel(c: Cardinal, chat_id: int, message_id: int):
     """Обновление панели настроек с кнопками для изменения параметров."""
+    global PRICE_PER_STAR
+    price_label = f"{PRICE_PER_STAR} руб." if PRICE_PER_STAR > 0 else "не задан"
     keyboard = InlineKeyboardMarkup(row_width=1)
     keyboard.add(
         InlineKeyboardButton(text="🔑 Хэш", callback_data="edit_hash"),
@@ -1696,6 +1788,10 @@ def update_settings_panel(c: Cardinal, chat_id: int, message_id: int):
         InlineKeyboardButton(text="🔐 Мнемоника", callback_data="edit_mnemonic"),
         InlineKeyboardButton(text="👤 User ID", callback_data="edit_user_id"),
         InlineKeyboardButton(text="💳 Адрес кошелька", callback_data="show_wallet_address"),
+        InlineKeyboardButton(
+            text=f"💱 Курс звезды: {price_label}",
+            callback_data="edit_price_per_star"
+        ),
         InlineKeyboardButton(
             text=f"🤖 Возврат: {'Авто' if config['AUTO_REFUND'] else 'Ручной'}",
             callback_data="toggle_refund"
@@ -1712,6 +1808,8 @@ def update_settings_panel(c: Cardinal, chat_id: int, message_id: int):
     )
     message_text = (
         "⚙️ <b>Настройки AutoStars</b>\n"
+        "────────────────────\n"
+        f"<b>💱 Курс:</b> {_html.escape(price_label)} за звезду\n"
         "────────────────────\n"
         "Выберите параметр для изменения:"
     )
@@ -1813,10 +1911,10 @@ def init_commands(c: Cardinal):
         "toggle_autosale", "toggle_lots", "send_logs", "open_settings", "edit_hash",
         "edit_cookie", "edit_mnemonic", "toggle_refund", "back_to_main", "cancel",
         "edit_user_id", "daily_stats", "toggle_sender", "toggle_balance_format",
-        "show_wallet_address"
+        "show_wallet_address", "edit_price_per_star", "update_prices"
     ])
     def handle_config_callback(call):
-        global RUNNING, SHOW_SENDER
+        global RUNNING, SHOW_SENDER, PRICE_PER_STAR
         data = call.data
         chat_id = call.message.chat.id
         message_id = call.message.message_id
@@ -2079,6 +2177,67 @@ def init_commands(c: Cardinal):
                     sanitize_telegram_text(f"✅ Формат баланса изменен на {balance_type}")
                 )
                 update_settings_panel(c, chat_id, message_id)
+
+            elif data == "edit_price_per_star":
+                current_price = PRICE_PER_STAR if PRICE_PER_STAR > 0 else "не задан"
+                keyboard = InlineKeyboardMarkup(row_width=1)
+                keyboard.add(InlineKeyboardButton(text="❌ Отмена", callback_data="cancel"))
+                c.telegram.bot.edit_message_text(
+                    chat_id=chat_id,
+                    message_id=message_id,
+                    text=sanitize_telegram_text(
+                        f"💱 Текущий курс: {current_price}\n\n"
+                        "Введите цену за одну звезду в рублях (например: 1.95).\n"
+                        "Бот умножит это на кол-во звёзд в каждом лоте и обновит цены.\n\n"
+                        "Введите 0 чтобы отключить автоматическое обновление цен."
+                    ),
+                    reply_markup=keyboard
+                )
+
+                def handle_new_price(m):
+                    global PRICE_PER_STAR
+                    if m.text.startswith('/'):
+                        c.telegram.bot.send_message(chat_id, "❌ Ввод отменён.")
+                        update_settings_panel(c, chat_id, message_id)
+                        c.telegram.bot.remove_message_handler(handle_new_price)
+                        return
+                    if m.text.lower() in ("отмена", "cancel"):
+                        update_settings_panel(c, chat_id, message_id)
+                        c.telegram.bot.remove_message_handler(handle_new_price)
+                        return
+                    try:
+                        new_price = float(m.text.strip().replace(",", "."))
+                        if new_price < 0:
+                            raise ValueError("отрицательное значение")
+                    except ValueError:
+                        c.telegram.bot.send_message(
+                            chat_id,
+                            sanitize_telegram_text("❌ Неверный формат. Введите число, например: 1.95")
+                        )
+                        return
+                    config["PRICE_PER_STAR"] = new_price
+                    PRICE_PER_STAR = new_price
+                    with open(CONFIG_FILE, 'w', encoding='utf-8') as f:
+                        json.dump(config, f, indent=4, ensure_ascii=False)
+                    label = f"{new_price} руб." if new_price > 0 else "отключён"
+                    c.telegram.bot.send_message(
+                        chat_id,
+                        sanitize_telegram_text(f"✅ Курс звезды установлен: {label}\n"
+                                               "Нажмите «💱 Обновить цены» в главном меню, чтобы применить.")
+                    )
+                    update_settings_panel(c, chat_id, message_id)
+                    c.telegram.bot.remove_message_handler(handle_new_price)
+
+                c.telegram.bot.register_next_step_handler(call.message, handle_new_price)
+
+            elif data == "update_prices":
+                c.telegram.bot.send_message(
+                    chat_id,
+                    sanitize_telegram_text("⏳ Обновляю цены на лотах...")
+                )
+                report = update_lots_prices(c, chat_id)
+                send_chunked_message(c.telegram.bot, chat_id, sanitize_telegram_text(report))
+                update_config_panel(c, chat_id, message_id)
 
         except Exception as e:
             c.telegram.bot.send_message(
