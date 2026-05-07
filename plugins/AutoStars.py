@@ -156,6 +156,12 @@ default_config = {
 }
 
 
+def save_config(cfg: dict):
+    os.makedirs(os.path.dirname(CONFIG_FILE), exist_ok=True)
+    with open(CONFIG_FILE, 'w', encoding='utf-8') as f:
+        json.dump(cfg, f, indent=4, ensure_ascii=False)
+
+
 def load_config() -> dict:
     os.makedirs(os.path.dirname(CONFIG_FILE), exist_ok=True)
     if not os.path.exists(CONFIG_FILE):
