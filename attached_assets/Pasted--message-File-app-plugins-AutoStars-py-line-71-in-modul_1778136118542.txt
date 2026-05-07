@@ -1,0 +1,25 @@
+{"message":"  File \"/app/plugins/AutoStars.py\", line 71, in <module>","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T06:41:22.450746862Z"}
+{"message":"Traceback (most recent call last):","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T06:41:22.777137598Z"}
+{"message":"ModuleNotFoundError: No module named 'tonutils.client'","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T06:41:22.777159279Z"}
+{"message":"Traceback (most recent call last):","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T06:41:22.777182078Z"}
+{"message":"  File \"/app/plugins/AutoStars.py\", line 80, in <module>","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T06:41:22.777187415Z"}
+{"message":"    from tonutils.client import TonapiClient","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T06:41:22.777198366Z"}
+{"message":"[07-05-2026 06:41:22]> E: Не удалось загрузить плагин AutoStars.py.","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T06:41:22.777209603Z"}
+{"message":"[07-05-2026 06:41:22]> I: Telegram бот инициализирован.","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T06:41:22.777214983Z"}
+{"message":"[07-05-2026 06:41:22]> I: Хэндлеры из tg_bot.auto_response_cp.py зарегистрированы.","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T06:41:22.777220286Z"}
+{"message":"[07-05-2026 06:41:22]> I: Хэндлеры из tg_bot.config_loader_cp.py зарегистрированы.","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T06:41:22.777231851Z"}
+{"message":"[07-05-2026 06:41:22]> I: Хэндлеры из tg_bot.plugins_cp.py зарегистрированы.","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T06:41:22.779070202Z"}
+{"message":"[07-05-2026 06:41:22]> I: Хэндлеры из tg_bot.file_uploader.py зарегистрированы.","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T06:41:22.779078115Z"}
+{"message":"[07-05-2026 06:41:22]> I: Хэндлеры из tg_bot.authorized_users_cp.py зарегистрированы.","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T06:41:22.779084748Z"}
+{"message":"[07-05-2026 06:41:22]> I: Хэндлеры из tg_bot.default_cp.py зарегистрированы.","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T06:41:22.779141014Z"}
+{"message":"[07-05-2026 06:41:29]> I: ------------------------------------------------------------","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T06:41:29.145079138Z"}
+{"message":"[07-05-2026 06:41:29]> I: * Доброе утро, Linaever.                                   *","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T06:41:29.145085401Z"}
+{"message":"[07-05-2026 06:41:29]> I: * Ваш ID: 2694790.                                         *","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T06:41:29.145091011Z"}
+{"message":"[07-05-2026 06:41:29]> I: * Ваш текущий баланс: 60.69 RUB | 0.0 USD | 0.0 EUR        *","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T06:41:29.145095506Z"}
+{"message":"[07-05-2026 06:41:29]> I: * Текущие незавершенные сделки: 32.                        *","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T06:41:29.145099899Z"}
+{"message":"[07-05-2026 06:41:29]> I: * Удачной торговли!                                        *","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T06:41:29.145105571Z"}
+{"message":"[07-05-2026 06:41:29]> I: ","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T06:41:29.145120242Z"}
+{"message":"[07-05-2026 06:41:29]> I: Получаю данные о лотах и категориях...","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T06:41:29.145125888Z"}
+{"message":"[07-05-2026 06:41:29]> I: Обновил информацию о лотах (8) и категориях (8) профиля (TG ПУ).","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T06:41:29.501687001Z"}
+{"message":"[07-05-2026 06:41:29]> I: Цикл автоподнятия лотов запущен (это не значит, что автоподнятие лотов включено).","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T06:41:29.501696714Z"}
+{"message":"[07-05-2026 06:41:29]> I: Цикл обновления сессии запущен.","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T06:41:29.501703504Z"}
