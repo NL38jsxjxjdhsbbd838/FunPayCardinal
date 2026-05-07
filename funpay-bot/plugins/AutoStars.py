@@ -1746,6 +1746,17 @@ def init_commands(c: Cardinal):
     ])
     c.telegram.msg_handler(lambda m: stars_config(c, m), commands=["stars_config"])
 
+    @c.telegram.bot.callback_query_handler(func=lambda call: call.data == "autostars_main")
+    def handle_autostars_main_button(call):
+        """Открывает панель AutoStars по нажатию кнопки на главном экране."""
+        c.telegram.bot.answer_callback_query(call.id)
+
+        class FakeMessage:
+            chat = call.message.chat
+            from_user = call.from_user
+
+        stars_config(c, FakeMessage())
+
     @c.telegram.bot.callback_query_handler(func=lambda call: call.data in [
         "toggle_autosale", "toggle_lots", "send_logs", "open_settings", "edit_hash",
         "edit_cookie", "edit_mnemonic", "toggle_refund", "back_to_main", "cancel",
