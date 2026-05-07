@@ -125,7 +125,7 @@ CONFIG_FILE = "plugins/stars_config.json"
 
 
 def sanitize_telegram_text(text: str) -> str:
-    text = text.replace("<", "<").replace(">", ">")
+    text = _html.escape(str(text))
     text = text.encode("utf-8", errors="replace").decode("utf-8", errors="replace")
     return text
 
@@ -1523,10 +1523,10 @@ def stars_config(c: Cardinal, m: types.Message):
         message_text = (
             "✨ <b>AutoStars: Панель управления</b> ✨\n"
             "────────────────────\n"
-            f"<b>Активация:</b> {activation_status}\n"
-            f"<b>Статус:</b> {status_text}\n"
-            f"<b>Лоты:</b> {lots_text}\n"
-            f"<b>💰 Баланс:</b> {balance_text}\n\n"
+            f"<b>Активация:</b> {_html.escape(str(activation_status))}\n"
+            f"<b>Статус:</b> {_html.escape(str(status_text))}\n"
+            f"<b>Лоты:</b> {_html.escape(str(lots_text))}\n"
+            f"<b>💰 Баланс:</b> {_html.escape(str(balance_text))}\n\n"
             "💡 <b>Проблемы с отображением баланса?</b>\n"
             "Если баланс отображается некорректно (например, 2.35e-10 TON), переключите формат баланса:\n"
             "⚙️ Настройки → 💰 Баланс → выберите 'Старый формат'.\n"
@@ -1604,10 +1604,10 @@ def update_config_panel(c: Cardinal, chat_id: int, message_id: int):
         message_text = (
             "✨ <b>AutoStars: Панель управления</b> ✨\n"
             "────────────────────\n"
-            f"<b>Активация:</b> {activation_status}\n"
-            f"<b>Статус:</b> {status_text}\n"
-            f"<b>Лоты:</b> {lots_text}\n"
-            f"<b>💰 Баланс:</b> {balance_text}\n"
+            f"<b>Активация:</b> {_html.escape(str(activation_status))}\n"
+            f"<b>Статус:</b> {_html.escape(str(status_text))}\n"
+            f"<b>Лоты:</b> {_html.escape(str(lots_text))}\n"
+            f"<b>💰 Баланс:</b> {_html.escape(str(balance_text))}\n"
             "────────────────────\n"
             "Выберите действие ниже:"
         )
