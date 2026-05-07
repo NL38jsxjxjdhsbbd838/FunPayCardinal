@@ -35,3 +35,4 @@ urllib3>=2.2.2
 utils
 yarl>=1.17.0
 pyarmor
+matplotlib
