@@ -981,6 +981,8 @@ def handle_new_order_stars(c: Cardinal, e: NewOrderEvent, *args):
     username_from_order = None
     need_to_ask_username = True
 
+    _USERNAME_PARAM_KEYS = {"telegram username", "username", "telegram", "юзернейм", "ник", "никнейм"}
+
     try:
         order_details = c.account.get_order(OrderID)
         if order_details:
@@ -995,8 +997,8 @@ def handle_new_order_stars(c: Cardinal, e: NewOrderEvent, *args):
             for param_name, param_value in order_details.lot_params_dict.items():
                 logger.debug(f"  - {param_name}: {param_value}")
 
-                if param_name == "Telegram Username" and param_value:
-                    logger.debug(f"Найден Telegram Username в параметрах: {param_value}")
+                if param_name.strip().lower() in _USERNAME_PARAM_KEYS and param_value:
+                    logger.debug(f"Найден Telegram Username в параметрах ({param_name}): {param_value}")
 
                     username_value = param_value.strip()
 
@@ -1015,12 +1017,24 @@ def handle_new_order_stars(c: Cardinal, e: NewOrderEvent, *args):
 
                         username_from_order = username_value
                         need_to_ask_username = False
-                        logger.debug(f"Автоматически установлен Telegram Username: {username_from_order}")
+                        logger.debug(f"Автоматически установлен Telegram Username из параметров: {username_from_order}")
 
             if order_details.character_name:
                 logger.debug(f"Имя персонажа: {order_details.character_name}")
     except Exception as e:
         logger.error(f"Ошибка при получении расширенных данных заказа: {e}")
+
+    # Fallback: извлекаем @username прямо из описания заказа (e.order.description)
+    # FunPay передаёт его там в формате "По username, @Hanami_Me" или просто "@username"
+    if need_to_ask_username:
+        desc_match = re.search(r'@([\w]{3,32})', e.order.description)
+        if desc_match:
+            candidate = '@' + desc_match.group(1)
+            has_links = any(link in candidate.lower() for link in ["http://", "https://", "t.me/"])
+            if not has_links:
+                username_from_order = candidate
+                need_to_ask_username = False
+                logger.debug(f"Username извлечён из описания заказа: {username_from_order}")
 
     match = re.search(r'(\d+)\s*звёзд?', e.order.description, re.IGNORECASE)
     if match:
