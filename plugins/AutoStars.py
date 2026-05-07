@@ -50,6 +50,8 @@ def _pip_install(*packages: str):
 
 
 try:
+    import matplotlib
+    matplotlib.use('Agg')
     import matplotlib.pyplot as plt
 except Exception as _mpl_err:
     import traceback
@@ -57,6 +59,8 @@ except Exception as _mpl_err:
     traceback.print_exc()
     try:
         _pip_install("matplotlib")
+        import matplotlib
+        matplotlib.use('Agg')
         import matplotlib.pyplot as plt
     except Exception as _mpl_err2:
         traceback.print_exc()

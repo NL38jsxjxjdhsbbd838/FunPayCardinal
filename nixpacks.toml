@@ -1,5 +1,5 @@
 [phases.setup]
-nixPkgs = ["python312", "gcc", "glibc", "zlib", "libffi", "openssl"]
+nixPkgs = ["python312", "gcc", "glibc", "zlib", "libffi", "openssl", "freetype", "libpng", "pkg-config"]
 
 [phases.install]
 cmds = ["pip install -r requirements.txt"]
