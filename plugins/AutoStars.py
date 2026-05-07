@@ -17,6 +17,7 @@ import random
 import subprocess
 import sys
 import atexit
+import html as _html
 from typing import TYPE_CHECKING, Dict, List, Tuple, Optional
 
 def _pip_install(*packages: str):
@@ -851,8 +852,7 @@ class PaymentProcessor:
 ✅ Статус: Готово
 
 📝 Поделитесь впечатлениями, буду рад! 😇
-                        """),
-                        parse_mode="HTML"
+                        """)
                     )
                 except Exception as e:
                     logger.error(f"[AUTO_STARS] Ошибка при отправке сообщения админу: {e}")
@@ -1838,8 +1838,7 @@ def init_commands(c: Cardinal):
                 if stats_message:
                     c.telegram.bot.send_message(
                         chat_id,
-                        sanitize_telegram_text(stats_message),
-                        parse_mode="HTML"
+                        sanitize_telegram_text(stats_message)
                     )
                 else:
                     c.telegram.bot.send_message(
@@ -1855,8 +1854,7 @@ def init_commands(c: Cardinal):
                     chat_id=chat_id,
                     message_id=message_id,
                     text=sanitize_telegram_text(f"🔑 Текущий хэш:\n{current_hash}\n\nВведите новый:"),
-                    reply_markup=keyboard,
-                    parse_mode="HTML"
+                    reply_markup=keyboard
                 )
 
                 def handle_new_hash(m):
@@ -1889,8 +1887,7 @@ def init_commands(c: Cardinal):
                     chat_id=chat_id,
                     message_id=message_id,
                     text=sanitize_telegram_text(f"🍪 Текущая куки:\n{current_cookie}\n\nВведите новую:"),
-                    reply_markup=keyboard,
-                    parse_mode="HTML"
+                    reply_markup=keyboard
                 )
 
                 def handle_new_cookie(m):
@@ -1924,8 +1921,7 @@ def init_commands(c: Cardinal):
                     message_id=message_id,
                     text=sanitize_telegram_text(
                         f"🔐 Текущая мнемоника:\n{current_mnemonic}\n\nВведите новую (24 слова):"),
-                    reply_markup=keyboard,
-                    parse_mode="HTML"
+                    reply_markup=keyboard
                 )
 
                 def handle_new_mnemonic(m):
@@ -1961,8 +1957,7 @@ def init_commands(c: Cardinal):
                     chat_id=chat_id,
                     message_id=message_id,
                     text=sanitize_telegram_text(f"👤 Текущий User ID:\n{current_user_id}\n\nВведите новый:"),
-                    reply_markup=keyboard,
-                    parse_mode="HTML"
+                    reply_markup=keyboard
                 )
 
                 def handle_new_user_id(m):
@@ -2000,10 +1995,8 @@ def init_commands(c: Cardinal):
                     wallet_address = wallet.address.to_str(is_bounceable=False)
                     c.telegram.bot.send_message(
                         chat_id,
-                        sanitize_telegram_text(
-                            f"💳 Адрес вашего TON-кошелька:\n\n<code>{wallet_address}</code>\n\n"
-                            "Отправьте TON на этот адрес для пополнения баланса."
-                        ),
+                        f"💳 Адрес вашего TON-кошелька:\n\n<code>{_html.escape(str(wallet_address))}</code>\n\n"
+                        "Отправьте TON на этот адрес для пополнения баланса.",
                         parse_mode="HTML"
                     )
                 except Exception as _addr_err:
