@@ -4,9 +4,9 @@ nixPkgs = ["python312", "gcc", "glibc", "zlib", "libffi", "openssl"]
 [phases.install]
 cmds = [
   "python -m venv /opt/venv",
-  ". /opt/venv/bin/activate && pip install --upgrade pip",
-  ". /opt/venv/bin/activate && pip install -r requirements.txt",
-  ". /opt/venv/bin/activate && pip install 'tonutils==0.5.8' --force-reinstall --quiet"
+  ". /opt/venv/bin/activate && pip install --upgrade pip --no-cache-dir",
+  ". /opt/venv/bin/activate && pip install -r requirements.txt --no-cache-dir",
+  ". /opt/venv/bin/activate && pip install 'tonutils==0.5.8' --force-reinstall --no-cache-dir"
 ]
 
 [start]

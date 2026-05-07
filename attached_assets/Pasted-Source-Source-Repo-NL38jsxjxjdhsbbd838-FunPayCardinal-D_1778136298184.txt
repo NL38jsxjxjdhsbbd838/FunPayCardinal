@@ -1,0 +1,150 @@
+Source
+Source Repo
+NL38jsxjxjdhsbbd838/FunPayCardinal
+
+
+
+Disconnect
+Add Root Directory (used for build and deploy steps. Docs↗)
+Branch connected to production
+Changes made to this GitHub branch will be automatically pushed to this environment.
+main
+
+Disconnect
+Auto deploys when pushed to GitHub
+
+Disable
+Wait for CI
+Trigger deployments after all GitHub actions have completed successfully.
+
+Networking
+Public Networking
+Access to this service publicly through HTTP or TCP
+
+Generate Domain
+
+Custom Domain
+
+TCP Proxy
+Private Networking
+Communicate with this service from within the Railway network.
+funpaycardinal.railway.internal
+IPv6
+
+
+Ready to talk privately ·
+You can also simply call me
+funpaycardinal
+
+DNS
+funpaycardinal
+.railway.internal
+
+Endpoint name available!
+
+
+Cancel
+
+Update
+Static Outbound IPs
+This will assign a permanent IP address which your service will use for outbound traffic, however it cannot be used for inbound traffic.
+
+Outbound IPv6
+Enable your service to make outbound connections to IPv6 destinations.
+
+Scale
+Regions & Replicas
+Deploy replicas per region for horizontal scaling.
+EU West (Amsterdam, Netherlands)
+
+Replicas
+1
+Replica
+
+Add Region
+Replica Limits
+Allocate a maximum vCPU and Memory for each replica.
+CPU: 24 vCPU
+
+Plan limit: 24 vCPU
+
+Memory: 24 GB
+
+Plan limit: 24 GB
+
+Upgrade for higher limits
+Build
+Builder
+The value is set in
+/railway.toml
+Open file↗
+
+Nixpacks
+
+Deprecated
+
+Nix-based builder developed by Railway Docs↗
+
+Providers
+Language providers that will be used to build the service
+No providers
+
+Edit providers in /nixpacks.toml to change
+Custom Build Command
+Override the default build command that is run when building your app. Docs↗
+
+Build Command
+Watch Paths
+Gitignore-style rules to trigger a new deployment based on what file paths have changed. Docs↗
+Add pattern
+Add pattern e.g. /src/**
+
+Deploy
+Custom Start Command
+Command that will be run to start new deployments. Docs↗
+The value is set in
+/railway.toml
+Open file↗
+Start command
+bash start.sh
+Add pre-deploy step (Docs↗)
+Teardown
+Configure old deployment termination when a new one is started. Docs↗
+
+Cron Schedule
+Run the service according to the specified cron schedule.
+
+Add Schedule
+Healthcheck Path
+Endpoint to be called before a deploy completes to ensure the new deployment is live. Docs↗
+
+Healthcheck Path
+Serverless
+Containers will scale down to zero and then scale up based on traffic. Requests while the container is sleeping will be queued and served when the container wakes up. Docs↗
+
+Restart Policy
+Configure what to do when the process exits. Docs↗
+The value is set in
+/railway.toml
+Open file↗
+Always
+
+Restart the container always.
+
+
+Number of times to try and restart the service if it stopped due to an error.
+Max restart retries
+10
+Config-as-code
+Railway Config File
+Manage your build and deployment settings through a config file. Docs↗
+
+Add File Path
+Feature-flags
+
+
+
+Delete Service
+Deleting this service will permanently delete all its deployments and remove it from this environment. This cannot be undone.
+
+Delete service
