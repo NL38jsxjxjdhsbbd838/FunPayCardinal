@@ -1759,22 +1759,31 @@ def update_config_panel(c: Cardinal, chat_id: int, message_id: int):
             "Выберите действие ниже:"
         )
 
-        c.telegram.bot.edit_message_text(
-            chat_id=chat_id,
-            message_id=message_id,
-            text=message_text,
-            reply_markup=keyboard,
-            parse_mode="HTML"
-        )
+        try:
+            c.telegram.bot.edit_message_text(
+                chat_id=chat_id,
+                message_id=message_id,
+                text=message_text,
+                reply_markup=keyboard,
+                parse_mode="HTML"
+            )
+        except Exception as _edit_err:
+            if "message is not modified" in str(_edit_err).lower():
+                pass  # содержимое не изменилось — игнорируем
+            else:
+                raise
     except Exception as e:
         error_message = sanitize_telegram_text(str(e))
         if len(error_message) > 200:
             error_message = error_message[:197] + "..."
-        c.telegram.bot.send_message(
-            chat_id,
-            f"❌ Ошибка при обновлении панели: {error_message}"
-        )
         logger.error(f"Ошибка в update_config_panel: {e}")
+        try:
+            c.telegram.bot.send_message(
+                chat_id,
+                f"❌ Ошибка при обновлении панели: {error_message}"
+            )
+        except Exception:
+            pass
 
 
 def update_settings_panel(c: Cardinal, chat_id: int, message_id: int):
@@ -1813,13 +1822,17 @@ def update_settings_panel(c: Cardinal, chat_id: int, message_id: int):
         "────────────────────\n"
         "Выберите параметр для изменения:"
     )
-    c.telegram.bot.edit_message_text(
-        chat_id=chat_id,
-        message_id=message_id,
-        text=message_text,
-        reply_markup=keyboard,
-        parse_mode="HTML"
-    )
+    try:
+        c.telegram.bot.edit_message_text(
+            chat_id=chat_id,
+            message_id=message_id,
+            text=message_text,
+            reply_markup=keyboard,
+            parse_mode="HTML"
+        )
+    except Exception as _edit_err:
+        if "message is not modified" not in str(_edit_err).lower():
+            logger.warning(f"Ошибка edit в update_settings_panel: {_edit_err}")
 
 
 def get_daily_stats():
@@ -2005,12 +2018,16 @@ def init_commands(c: Cardinal):
                 current_hash = config.get("fragment_api", {}).get("hash", "Не задан")
                 keyboard = InlineKeyboardMarkup(row_width=1)
                 keyboard.add(InlineKeyboardButton(text="❌ Отмена", callback_data="cancel"))
-                c.telegram.bot.edit_message_text(
-                    chat_id=chat_id,
-                    message_id=message_id,
-                    text=sanitize_telegram_text(f"🔑 Текущий хэш:\n{current_hash}\n\nВведите новый:"),
-                    reply_markup=keyboard
-                )
+                try:
+                    c.telegram.bot.edit_message_text(
+                        chat_id=chat_id,
+                        message_id=message_id,
+                        text=sanitize_telegram_text(f"🔑 Текущий хэш:\n{current_hash}\n\nВведите новый:"),
+                        reply_markup=keyboard
+                    )
+                except Exception as _e:
+                    if "message is not modified" not in str(_e).lower():
+                        raise
 
                 def handle_new_hash(m):
                     global FRAGMENT_HASH, url, headers
@@ -2038,12 +2055,16 @@ def init_commands(c: Cardinal):
                 current_cookie = config.get("fragment_api", {}).get("cookie", "Не задана")
                 keyboard = InlineKeyboardMarkup(row_width=1)
                 keyboard.add(InlineKeyboardButton(text="❌ Отмена", callback_data="cancel"))
-                c.telegram.bot.edit_message_text(
-                    chat_id=chat_id,
-                    message_id=message_id,
-                    text=sanitize_telegram_text(f"🍪 Текущая куки:\n{current_cookie}\n\nВведите новую:"),
-                    reply_markup=keyboard
-                )
+                try:
+                    c.telegram.bot.edit_message_text(
+                        chat_id=chat_id,
+                        message_id=message_id,
+                        text=sanitize_telegram_text(f"🍪 Текущая куки:\n{current_cookie}\n\nВведите новую:"),
+                        reply_markup=keyboard
+                    )
+                except Exception as _e:
+                    if "message is not modified" not in str(_e).lower():
+                        raise
 
                 def handle_new_cookie(m):
                     global FRAGMENT_COOKIE, headers
@@ -2071,13 +2092,17 @@ def init_commands(c: Cardinal):
                 current_mnemonic = " ".join(config.get("MNEMONIC", []))
                 keyboard = InlineKeyboardMarkup(row_width=1)
                 keyboard.add(InlineKeyboardButton(text="❌ Отмена", callback_data="cancel"))
-                c.telegram.bot.edit_message_text(
-                    chat_id=chat_id,
-                    message_id=message_id,
-                    text=sanitize_telegram_text(
-                        f"🔐 Текущая мнемоника:\n{current_mnemonic}\n\nВведите новую (24 слова):"),
-                    reply_markup=keyboard
-                )
+                try:
+                    c.telegram.bot.edit_message_text(
+                        chat_id=chat_id,
+                        message_id=message_id,
+                        text=sanitize_telegram_text(
+                            f"🔐 Текущая мнемоника:\n{current_mnemonic}\n\nВведите новую (24 слова):"),
+                        reply_markup=keyboard
+                    )
+                except Exception as _e:
+                    if "message is not modified" not in str(_e).lower():
+                        raise
 
                 def handle_new_mnemonic(m):
                     global MNEMONIC
@@ -2108,12 +2133,16 @@ def init_commands(c: Cardinal):
                 current_user_id = config.get("user_id", "Не задан")
                 keyboard = InlineKeyboardMarkup(row_width=1)
                 keyboard.add(InlineKeyboardButton(text="❌ Отмена", callback_data="cancel"))
-                c.telegram.bot.edit_message_text(
-                    chat_id=chat_id,
-                    message_id=message_id,
-                    text=sanitize_telegram_text(f"👤 Текущий User ID:\n{current_user_id}\n\nВведите новый:"),
-                    reply_markup=keyboard
-                )
+                try:
+                    c.telegram.bot.edit_message_text(
+                        chat_id=chat_id,
+                        message_id=message_id,
+                        text=sanitize_telegram_text(f"👤 Текущий User ID:\n{current_user_id}\n\nВведите новый:"),
+                        reply_markup=keyboard
+                    )
+                except Exception as _e:
+                    if "message is not modified" not in str(_e).lower():
+                        raise
 
                 def handle_new_user_id(m):
                     global USER_ID
@@ -2182,17 +2211,21 @@ def init_commands(c: Cardinal):
                 current_price = PRICE_PER_STAR if PRICE_PER_STAR > 0 else "не задан"
                 keyboard = InlineKeyboardMarkup(row_width=1)
                 keyboard.add(InlineKeyboardButton(text="❌ Отмена", callback_data="cancel"))
-                c.telegram.bot.edit_message_text(
-                    chat_id=chat_id,
-                    message_id=message_id,
-                    text=sanitize_telegram_text(
-                        f"💱 Текущий курс: {current_price}\n\n"
-                        "Введите цену за одну звезду в рублях (например: 1.95).\n"
-                        "Бот умножит это на кол-во звёзд в каждом лоте и обновит цены.\n\n"
-                        "Введите 0 чтобы отключить автоматическое обновление цен."
-                    ),
-                    reply_markup=keyboard
-                )
+                try:
+                    c.telegram.bot.edit_message_text(
+                        chat_id=chat_id,
+                        message_id=message_id,
+                        text=sanitize_telegram_text(
+                            f"💱 Текущий курс: {current_price}\n\n"
+                            "Введите цену за одну звезду в рублях (например: 1.95).\n"
+                            "Бот умножит это на кол-во звёзд в каждом лоте и обновит цены.\n\n"
+                            "Введите 0 чтобы отключить автоматическое обновление цен."
+                        ),
+                        reply_markup=keyboard
+                    )
+                except Exception as _e:
+                    if "message is not modified" not in str(_e).lower():
+                        raise
 
                 def handle_new_price(m):
                     global PRICE_PER_STAR
@@ -2237,7 +2270,6 @@ def init_commands(c: Cardinal):
                 )
                 report = update_lots_prices(c, chat_id)
                 send_chunked_message(c.telegram.bot, chat_id, sanitize_telegram_text(report))
-                update_config_panel(c, chat_id, message_id)
 
         except Exception as e:
             c.telegram.bot.send_message(
