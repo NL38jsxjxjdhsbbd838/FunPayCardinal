@@ -696,7 +696,7 @@ class PaymentProcessor:
                                 f"Превышено количество попыток ({max_retries}) для заказа {orderID} из-за ошибки 406.")
                             update_stats(False, stars_quantity)
                             c.send_message(buyer_chat_id, sanitize_telegram_text(
-                                "❌ Ваш заказ не выполнен. Деньги возвращены. Пожалуйста, свяжитесь с поддержкой."))
+                                "❌ Заказ не выполнен. Средства возвращены автоматически. Обратитесь в поддержку при необходимости."))
                             if config["AUTO_REFUND"]:
                                 try:
                                     c.account.refund(orderID)
@@ -723,7 +723,7 @@ class PaymentProcessor:
                                 o['confirmed'] = False
                                 break
                         c.send_message(buyer_chat_id, sanitize_telegram_text(
-                            "❌ Указанный вами username не найден в Telegram. Пожалуйста, введите корректный @username для получения Stars."))
+                            "❌ Указанный @username не найден в Telegram. Проверьте правильность и введите корректный @username."))
                         logger.error(f"[AUTO_STARS] Ошибка: {error} (orderID={orderID})")
                         return
                     elif 'Не удалось декодировать JSON' in error:
@@ -743,15 +743,13 @@ class PaymentProcessor:
                                 logger.error(f"Превышено количество попыток декодирования JSON для заказа {orderID}")
                         else:
                             logger.error(f"Заказ {orderID} не найден в orders_info для buyer_chat_id {buyer_chat_id}")
-                        # Покупателю — только универсальное сообщение
                         c.send_message(buyer_chat_id, sanitize_telegram_text(
-                            "❌ Ваш заказ не выполнен. Деньги возвращены. Пожалуйста, свяжитесь с поддержкой."))
+                            "❌ Заказ не выполнен. Средства возвращены автоматически. Обратитесь в поддержку при необходимости."))
                         logger.error(f"[AUTO_STARS] Критическая ошибка: {error} (orderID={orderID})")
                         return
                     elif 'Недостаточно средств на кошельке' in error:
-                        # Покупателю — только инфо о возврате
                         c.send_message(buyer_chat_id, sanitize_telegram_text(
-                            "❌ На кошельке продавца недостаточно средств. Ваши деньги возвращены."))
+                            "❌ Временная техническая проблема. Средства возвращены. Попробуйте оформить заказ позже."))
                         try:
                             c.account.refund(orderID)
                         except Exception:
@@ -770,7 +768,7 @@ class PaymentProcessor:
                         RUNNING = False
                         update_stats(False, stars_quantity)
                         c.send_message(buyer_chat_id, sanitize_telegram_text(
-                            "❌ Ваш заказ не выполнен. Деньги возвращены. Пожалуйста, свяжитесь с поддержкой."))
+                            "❌ Заказ не выполнен. Средства возвращены автоматически. Обратитесь в поддержку при необходимости."))
                         if config["AUTO_REFUND"]:
                             try:
                                 c.account.refund(orderID)
@@ -788,7 +786,7 @@ class PaymentProcessor:
                     else:
                         update_stats(False, stars_quantity)
                         c.send_message(buyer_chat_id,
-                                       sanitize_telegram_text("❌ Ваш заказ не выполнен. Деньги возвращены. Пожалуйста, свяжитесь с поддержкой."))
+                                       sanitize_telegram_text("❌ Заказ не выполнен. Средства возвращены автоматически. Обратитесь в поддержку при необходимости."))
                         if config["AUTO_REFUND"]:
                             try:
                                 c.account.refund(orderID)
@@ -841,7 +839,7 @@ class PaymentProcessor:
                     logger.error(check_error)
                     update_stats(False, stars_quantity)
                     c.send_message(buyer_chat_id, sanitize_telegram_text(
-                        "❌ Ваш заказ не выполнен. Деньги возвращены. Пожалуйста, свяжитесь с поддержкой."))
+                        "❌ Заказ не выполнен. Средства возвращены автоматически. Обратитесь в поддержку при необходимости."))
                     if config["AUTO_REFUND"]:
                         try:
                             c.account.refund(orderID)
@@ -866,35 +864,27 @@ class PaymentProcessor:
                 try:
                     c.send_message(
                         buyer_chat_id,
-                        sanitize_telegram_text(f"""
-🌟 Успешная сделка!
-👤 Покупатель: {username}
-⭐️ Stars: {quantity}
-🔑 Ref ID: Ref#{ref_id}
-✅ Статус: Готово
-
-🔗 Доп подробности: {tx_hash}
-
-
-📝 Оставьте отзыв — это мотивирует! 😎
-                        """)
+                        sanitize_telegram_text(
+                            f"✅ Stars успешно отправлены!\n"
+                            f"⭐ Количество: {quantity}\n"
+                            f"🔑 Ref ID: Ref#{ref_id}\n\n"
+                            f"Подтвердите получение заказа: https://funpay.com/orders/{orderID}/\n"
+                            f"Спасибо за покупку! Будем рады вашему отзыву."
+                        )
                     )
                 except Exception as e:
                     logger.error(f"[AUTO_STARS] Ошибка при отправке сообщения клиенту: {e}")
                 try:
                     c.telegram.bot.send_message(
                         USER_ID,
-                        sanitize_telegram_text(f"""
-🌟 Транзакция успешно завершена!
-🔗 Подробности: https://preview.toncenter.com/api/v3/traces?msg_hash={tx_hash}&include_actions=true
-🔗 Доп подробности: https://tonviewer.com/transaction/{tx_hash}
-👤 Покупатель: {username}
-⭐️ Stars: {quantity}
-🔑 Ref ID: Ref#{ref_id}
-✅ Статус: Готово
-
-📝 Поделитесь впечатлениями, буду рад! 😇
-                        """)
+                        sanitize_telegram_text(
+                            f"✅ Транзакция выполнена!\n"
+                            f"👤 Покупатель: {username}\n"
+                            f"⭐ Stars: {quantity}\n"
+                            f"🔑 Ref ID: Ref#{ref_id}\n"
+                            f"🔗 TonViewer: https://tonviewer.com/transaction/{tx_hash}\n"
+                            f"🔗 TonCenter: https://preview.toncenter.com/api/v3/traces?msg_hash={tx_hash}&include_actions=true"
+                        )
                     )
                 except Exception as e:
                     logger.error(f"[AUTO_STARS] Ошибка при отправке сообщения админу: {e}")
@@ -908,9 +898,8 @@ class PaymentProcessor:
             except Exception as e:
                 logger.error(f"Ошибка при обработке платежа для {username}: {e}")
                 try:
-                    # Покупателю — только универсальное сообщение
                     c.send_message(buyer_chat_id,
-                                   sanitize_telegram_text(f"❌ Ваш заказ не выполнен. Деньги возвращены. Пожалуйста, свяжитесь с поддержкой."))
+                                   sanitize_telegram_text("❌ Заказ не выполнен. Средства возвращены автоматически. Обратитесь в поддержку при необходимости."))
                 except Exception as send_error:
                     logger.error(f"Не удалось отправить сообщение об ошибке пользователю {buyer_chat_id}: {send_error}")
                 logger.error(f"[AUTO_STARS] Критическая ошибка: {e} (orderID={orderID})")
@@ -920,7 +909,7 @@ class PaymentProcessor:
         update_stats(False, stars_quantity)
         # Покупателю — только универсальное сообщение
         c.send_message(buyer_chat_id, sanitize_telegram_text(
-            "❌ Не удалось выполнить транзакцию после нескольких попыток. Деньги возвращены. Пожалуйста, свяжитесь с поддержкой."))
+            "❌ Заказ не выполнен. Средства возвращены автоматически. Обратитесь в поддержку при необходимости."))
         if config["AUTO_REFUND"]:
             try:
                 c.account.refund(orderID)
@@ -968,7 +957,7 @@ UPDATE = """
 NAME = "AutoStars"
 VERSION = "4.0"
 DESCRIPTION = "Плагин для авто-накрутки Stars через Fragment."
-CREDITS = "@AnastasiaPisun"
+CREDITS = ""
 UUID = "f3a1c2d4-8b7e-4f9a-b3c1-2d4e6f8a0b1c"
 SETTINGS_PAGE = False
 
@@ -1113,15 +1102,13 @@ def handle_new_order_stars(c: Cardinal, e: NewOrderEvent, *args):
                 c.send_message(
                     buyer_chat_id,
                     sanitize_telegram_text(
-                        f"✨ ЗАКАЗ НА {total_stars} STARS ПРИНЯТ! ✨\n"
-                        f"━━━━━━━━━━━━━━━━━━━━━━\n\n"
-                        f"👤 Обнаружен никнейм: {username_from_order}\n"
-                        f"📝 Данные Fragment: {additional_info}\n\n"
-                        f"📋 ИНСТРУКЦИИ:\n"
-                        f"✅ Для подтверждения: 'Да'\n"
-                        f"❌ Для изменения: 'Нет'\n"
-                        f"🔄 Для возврата: '!бэк'\n\n"
-                        f"━━━━━━━━━━━━━━━━━━━━━━"
+                        f"⭐ Заказ на {total_stars} Stars принят!\n\n"
+                        f"Найден аккаунт: {username_from_order}\n"
+                        f"Имя в Telegram: {blurred_name}\n\n"
+                        f"Это ваш аккаунт?\n"
+                        f"Да / + — подтвердить и отправить Stars\n"
+                        f"Нет / - — ввести другой @username\n"
+                        f"!бэк — отменить заказ и вернуть средства"
                     )
                 )
                 logger.info(
@@ -1131,14 +1118,10 @@ def handle_new_order_stars(c: Cardinal, e: NewOrderEvent, *args):
                 c.send_message(
                     buyer_chat_id,
                     sanitize_telegram_text(
-                        f"⭐️ ЗАКАЗ НА {total_stars} STARS ПРИНЯТ! ⭐️\n"
-                        f"━━━━━━━━━━━━━━━━━━━━━━\n\n"
-                        f"❗️ НЕОБХОДИМО УКАЗАТЬ ВАШ НИКНЕЙМ\n\n"
-                        f"👉 Введите ваш @username для получения Stars\n"
-                        f"👉 Проверьте профиль: Настройки → Изменить профиль\n\n"
-                        f"⚠️ Без @username пополнение невозможно!\n\n"
-                        f"❌ Для отмены и возврата: '!бэк'\n"
-                        f"━━━━━━━━━━━━━━━━━━━━━━"
+                        f"⭐ Заказ на {total_stars} Stars принят!\n\n"
+                        f"Для отправки Stars укажите ваш Telegram @username.\n"
+                        f"Проверить его можно в Telegram: Настройки → Изменить профиль.\n\n"
+                        f"Для отмены и возврата средств напишите: !бэк"
                     )
                 )
         else:
@@ -1178,7 +1161,7 @@ def handle_new_message_text(c: Cardinal, e: NewMessageEvent, *args):
         c.send_message(
             buyer_chat_id,
             sanitize_telegram_text(
-                "❌ Заказ отменен, средства возвращены. Вы не можете возобновить этот заказ. Для нового заказа оформите оплату заново.")
+                "Заказ отменён, средства возвращены. Для нового заказа оформите оплату заново.")
         )
         return
 
@@ -1208,7 +1191,7 @@ def handle_new_message_text(c: Cardinal, e: NewMessageEvent, *args):
 
             c.send_message(
                 buyer_chat_id,
-                sanitize_telegram_text("Пожалуйста, введите верный @username.")
+                sanitize_telegram_text("⏳ Принято! Заказ обрабатывается, ожидайте отправки Stars.")
             )
 
         return
@@ -1217,7 +1200,7 @@ def handle_new_message_text(c: Cardinal, e: NewMessageEvent, *args):
         if not re.match(r'^@\w+$', e.message.text.strip()):
             c.send_message(
                 e.message.chat_id,
-                sanitize_telegram_text("❌ Неверный формат username. Пожалуйста, введите @username.")
+                sanitize_telegram_text("Неверный формат. Введите @username (например: @username).")
             )
             return
         username = e.message.text.strip()
@@ -1254,8 +1237,13 @@ def handle_new_message_text(c: Cardinal, e: NewMessageEvent, *args):
         c.send_message(
             e.message.chat_id,
             sanitize_telegram_text(
-                f"🤖 Ваш никнейм в Telegram: {username} | {additional_info} \n"
-                "Если информация верна, введите '+' или 'Да'. Если хотите изменить никнейм, напишите '-' или 'Нет'. Для возврата средств введите '!бэк'.\n\nПочему ник в блюре? Чтобы площадка FunPay не выдала блокировку из-за вашего name"
+                f"Ваш @username: {username}\n"
+                f"Имя в Telegram: {blurred_name}\n\n"
+                f"Это ваш аккаунт?\n"
+                f"Да / + — подтвердить и отправить Stars\n"
+                f"Нет / - — ввести другой @username\n"
+                f"!бэк — отменить заказ и вернуть средства\n\n"
+                f"(имя скрыто частично в целях безопасности)"
             )
         )
         logger.info(
@@ -1280,12 +1268,12 @@ def handle_new_message_text(c: Cardinal, e: NewMessageEvent, *args):
             current_order['username'] = None
             c.send_message(
                 e.message.chat_id,
-                sanitize_telegram_text("Пожалуйста, введите @username ещё раз.")
+                sanitize_telegram_text("Введите другой @username.")
             )
         else:
             c.send_message(
                 e.message.chat_id,
-                sanitize_telegram_text("Пожалуйста, ответьте '+', 'Да', '-' или 'Нет'.")
+                sanitize_telegram_text("Ответьте: Да / + для подтверждения, Нет / - для изменения @username.")
             )
 
 
