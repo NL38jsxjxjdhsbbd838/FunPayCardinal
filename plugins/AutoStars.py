@@ -247,11 +247,7 @@ def refresh_fragment_hash():
                 FRAGMENT_HASH = new_hash
                 url = f"{FRAGMENT_URL}?hash={FRAGMENT_HASH}"
                 config["fragment_api"]["hash"] = new_hash
-                try:
-                    with open(CONFIG_FILE, 'w', encoding='utf-8') as _f:
-                        json.dump(config, _f, indent=4, ensure_ascii=False)
-                except Exception as _se:
-                    logger.warning(f"[AutoStars] Не удалось сохранить hash в конфиг: {_se}")
+                save_config(config)
             else:
                 logger.debug(f"[AutoStars] Fragment hash актуален: {FRAGMENT_HASH}")
         else:

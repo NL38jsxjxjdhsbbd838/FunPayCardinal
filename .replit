@@ -14,7 +14,7 @@ externalPort = 80
 
 [nix]
 channel = "stable-25_05"
-packages = ["cairo", "cargo", "ffmpeg-full", "freetype", "ghostscript", "gobject-introspection", "gtk3", "lcms2", "libiconv", "libimagequant", "libjpeg", "libtiff", "libwebp", "libxcrypt", "openjpeg", "openssl", "pkg-config", "qhull", "rustc", "tcl", "tk", "xcodebuild", "zlib"]
+packages = ["cargo", "freetype", "lcms2", "libiconv", "libimagequant", "libjpeg", "libtiff", "libwebp", "libxcrypt", "openjpeg", "openssl", "pkg-config", "rustc", "tcl", "tk", "xcodebuild", "zlib"]
 
 [workflows]
 runButton = "Project"
@@ -32,12 +32,12 @@ args = "Start application"
 name = "Start application"
 author = "agent"
 
-[workflows.workflow.metadata]
-outputType = "console"
-
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "cd /home/runner/workspace/funpay-bot && bash start.sh"
+args = "bash start.sh"
+
+[workflows.workflow.metadata]
+outputType = "console"
 
 [agent]
 expertMode = true
