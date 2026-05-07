@@ -1,0 +1,108 @@
+You reached the start of the range
+May 7, 2026, 9:26 AM
+{"message":"Starting Container","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:25.753349487Z"}
+{"message":"[start.sh] Activating /opt/venv...","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.385737979Z"}
+{"message":"[start.sh] No configs/_main.cfg found — generating from environment variables...","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.385744074Z"}
+{"message":"[generate_config] configs/_main.cfg written successfully.","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.385749782Z"}
+{"message":"/app/main.py:40: SyntaxWarning: invalid escape sequence '\\\u001b'","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T06:28:26.385755498Z"}
+{"message":"  logo = \"\"\"\u001b[38;5;0m.\u001b[0m\u001b[38;5;0m.\u001b[0m\u001b[38;5;0m.\u001b[0m\u001b[38;5;0m.\u001b[0m\u001b[38;5;0m.\u001b[0m\u001b[38;5;0m.\u001b[0m\u001b[38;5;0m.\u001b[0m\u001b[38;5;0m.\u001b[0m\u001b[38;5;0m.\u001b[0m\u001b[38;5;0m.\u001b[0m\u001b[38;5;0m.\u001b[0m\u001b[38;5;0m.\u001b[0m\u001b[38;5;0m.\u001b[0m\u001b[38;5;0m.\u001b[0m\u001b[38;5;0m.\u001b[0m\u001b[38;5;0m.\u001b[0m\u001b[38;5;0m.\u001b[0m\u001b[38;5;0m.\u001b[0m\u001b[38;5;0m.\u001b[0m\u001b[38;5;0m.\u001b[0m\u001b[38;5;0m.\u001b[0m\u001b[38;5;0m.\u001b[0m\u001b[38;5;0m.\u001b[0m\u001b[38;5;0m.\u001b[0m\u001b[38;5;0m.\u001b[0m\u001b[38;5;0m.\u001b[0m\u001b[38;5;0m.\u001b[0m\u001b[38;5;0m.\u001b[0m\u001b[38;5;0m.\u001b[0m\u001b[38;5;0m.\u001b[0m\u001b[38;5;0m.\u001b[0m\u001b[38;5;0m.\u001b[0m\u001b[38;5;0m.\u001b[0m\u001b[38;5;0m.\u001b[0m\u001b[38;5;0m.\u001b[0m\u001b[38;5;0m.\u001b[0m\u001b[38;5;0m.\u001b[0m\u001b[38;5;0m.\u001b[0m\u001b[38;5;0m.\u001b[0m\u001b[38;5;0m.\u001b[0m\u001b[38;5;0m.\u001b[0m\u001b[38;5;0m.\u001b[0m\u001b[38;5;0m.\u001b[0m\u001b[38;5;0m.\u001b[0m\u001b[38;5;0m.\u001b[0m\u001b[38;5;0m.\u001b[0m\u001b[38;5;0m.\u001b[0m\u001b[38;5;0m.\u001b[0m\u001b[38;5;0m.\u001b[0m\u001b[38;5;0m.\u001b[0m\u001b[38;5;0m.\u001b[0m\u001b[38;5;0m.\u001b[0m\u001b[38;5;0m.\u001b[0m\u001b[38;5;0m.\u001b[0m\u001b[38;5;0m.\u001b[0m\u001b[38;5;0m.\u001b[0m\u001b[38;5;0m.\u001b[0m\u001b[38;5;0m.\u001b[0m\u001b[38;5;0m.\u001b[0m\u001b[38;5;0m.\u001b[0m","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T06:28:26.385761306Z"}
+{"message":"/app/first_setup.py:145: SyntaxWarning: invalid escape sequence '\\('","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T06:28:26.385768608Z"}
+{"message":"  f\"\\n{Fore.CYAN}{Style.BRIGHT}Неверный формат токена. Попробуй еще раз! {Fore.RED}\\(!!˚0˚)/{Style.RESET_ALL}\")","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T06:28:26.385774880Z"}
+{"message":"/app/first_setup.py:153: SyntaxWarning: invalid escape sequence '\\('","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T06:28:26.385780721Z"}
+{"message":"  f\"{Fore.RED}¯\\(°_o)/¯{Style.RESET_ALL}\")","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T06:28:26.385786043Z"}
+{"message":"/app/first_setup.py:157: SyntaxWarning: invalid escape sequence '\\('","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T06:28:26.385792378Z"}
+{"message":"  f\"\\n{Fore.CYAN}{Style.BRIGHT}Ты не знаешь, что такое Google? {Fore.RED}\\(!!˚0˚)/{Style.RESET_ALL}\")","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T06:28:26.385799936Z"}
+{"message":"  f\"\\n{Fore.CYAN}{Style.BRIGHT}Это плохой пароль. Попробуй еще раз! {Fore.RED}\\(!!˚0˚)/{Style.RESET_ALL}\")","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T06:28:26.389241176Z"}
+{"message":"............................","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.389250794Z"}
+{"message":"..........","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.389258605Z"}
+{"message":"/app/first_setup.py:174: SyntaxWarning: invalid escape sequence '\\('","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T06:28:26.389283893Z"}
+{"message":"  f\"\\n{Fore.CYAN}{Style.BRIGHT}@username бота должен начинаться с \\\"funpay\\\"! {Fore.RED}\\(!!˚0˚)/{Style.RESET_ALL}\")","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T06:28:26.389294224Z"}
+{"message":"/app/first_setup.py:180: SyntaxWarning: invalid escape sequence '\\('","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T06:28:26.389300950Z"}
+{"message":"  print(f\"\\n{Fore.CYAN}{Style.BRIGHT}Попробуй еще раз!{s} {Fore.RED}\\(!!˚0˚)/{Style.RESET_ALL}\")","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T06:28:26.389306713Z"}
+{"message":"/app/first_setup.py:192: SyntaxWarning: invalid escape sequence '\\('","severity":"error","attributes":{"level":"error"},"timestamp":"2026-05-07T06:28:26.389312546Z"}
+{"message":"................","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.402447407Z"}
+{"message":"......","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.402455511Z"}
+{"message":"..............","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.402462060Z"}
+{"message":"..........","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.402470927Z"}
+{"message":"...........","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.402477615Z"}
+{"message":"...............'\".","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.408831352Z"}
+{"message":".......","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.408837680Z"}
+{"message":".....................","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.408842703Z"}
+{"message":"............","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.408848665Z"}
+{"message":"..............","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.408854172Z"}
+{"message":"............","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.409451073Z"}
+{"message":"............","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.409465266Z"}
+{"message":"..............","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.409474445Z"}
+{"message":"..,i>.......","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.409501419Z"}
+{"message":".","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.409509686Z"}
+{"message":"..........","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.409519640Z"}
+{"message":",>1[........","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.410911623Z"}
+{"message":"","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.410918997Z"}
+{"message":"............","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.410925303Z"}
+{"message":"............","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.410934087Z"}
+{"message":"............","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.410963271Z"}
+{"message":".........'^:","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.414828419Z"}
+{"message":"?(((^.......","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.414837143Z"}
+{"message":"","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.414844708Z"}
+{"message":"","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.415382661Z"}
+{"message":"..          ","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.415397923Z"}
+{"message":"...........'","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.415419744Z"}
+{"message":"  .          ","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.415425081Z"}
+{"message":"'''.......I{","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.415429053Z"}
+{"message":"(()(:.......","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.415436339Z"}
+{"message":"........        ....,[()()(i......","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.415576173Z"}
+{"message":".","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.415587547Z"}
+{"message":". lt/t//////","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.415595950Z"}
+{"message":"...'''''''''","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.415603471Z"}
+{"message":"/! -t/t///|[","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.415606114Z"}
+{"message":"'...'''''''.","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.415612921Z"}
+{"message":"i. ....  l}f","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.415616535Z"}
+{"message":"nnt}!...I(((","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.417016498Z"}
+{"message":"((()]'......","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.417049263Z"}
+{"message":"' 1$$$$$$$$$$","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.417125601Z"}
+{"message":"/ L$$$$$$$$$a","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.417148589Z"}
+{"message":"| .. {q@$$$$","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.417224860Z"}
+{"message":"$$@- `1((1))","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.421179757Z"}
+{"message":"[(c\" .....","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.421185593Z"}
+{"message":"' }@B@Mqpqqq","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.421191468Z"}
+{"message":"q] Y@B@bOZd@","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.421198898Z"}
+{"message":"$$$) .Y$$$$$","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.423914113Z"}
+{"message":"#a*%${ l(([{","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.423920657Z"}
+{"message":"]ua&b,....","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.423927739Z"}
+{"message":"..","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.423933513Z"}
+{"message":"' }$@$X      ","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.423940171Z"}
+{"message":". X$@$?   ","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.425154286Z"}
+{"message":"/$B@m t$@@","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.425160881Z"}
+{"message":"$Ui`.'I\\! ","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.425167961Z"}
+{"message":"-()1}toWu1{-i","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.425173879Z"}
+{"message":"\"...","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.425180147Z"}
+{"message":"' }$@$*CLCCCj","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.425186237Z"}
+{"message":". Y$@$x~_]","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.426054238Z"}
+{"message":"Z@B$Y h$@$","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.426060440Z"}
+{"message":"Q   .    ,","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.426271124Z"}
+{"message":")()([a$J])","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.426280431Z"}
+{"message":")[-!'..","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.426286952Z"}
+{"message":"' }$$$$$$$$$a","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.426534475Z"}
+{"message":"  Y$@$$$$$$","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.426540863Z"}
+{"message":"$$h:.*$@$f","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.426546243Z"}
+{"message":" `'....^}(","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.426551787Z"}
+{"message":")((]O$kC(>","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.433930688Z"}
+{"message":"l,'...","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.433935480Z"}
+{"message":"' }$@$hvcc","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.433967515Z"}
+{"message":"MModC(`  m","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.434070829Z"}
+{"message":"vc\\. Y$@$&","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.434082329Z"}
+{"message":"$@$oI   .^","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.434468019Z"}
+{"message":">}1{{1)]p@","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.434591781Z"}
+{"message":"&Bu ......","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.434599452Z"}
+{"message":"","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.434679062Z"}
+{"message":"' }$B$X     ","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.434687048Z"}
+{"message":" ' X$B$)'^.","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.435445460Z"}
+{"message":"    ' ~B$@","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.435456610Z"}
+{"message":"$%0x_~{)1{{{1","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.435463958Z"}
+{"message":"(1)|fx<...","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.435472709Z"}
+{"message":"....","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.435479402Z"}
+{"message":"' {$$$L `'","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.439681360Z"}
+{"message":"''.' U$$$1","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.439687935Z"}
+{"message":" ....'... +","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.439695953Z"}
+{"message":"k$$$*X(1{{{{}","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.439704048Z"}
+{"message":"{(((11{}:.","severity":"info","attributes":{"level":"info"},"timestamp":"2026-05-07T06:28:26.439710718Z"}
