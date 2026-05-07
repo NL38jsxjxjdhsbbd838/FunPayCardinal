@@ -1,0 +1,66 @@
+You reached the start of the range
+May 7, 2026, 10:54 AM
+scheduling build on Metal builder "builder-hnjssi"
+receiving snapshot
+2.2 MB
+751ms
+found 'nixpacks.toml' at 'nixpacks.toml'
+found 'railway.toml' at 'railway.toml'
+analyzing snapshot
+2.2 MB
+62ms
+
+stage-0
+FROM ghcr.io/railwayapp/nixpacks:ubuntu-1745885067@sha256:d45c89d80e13d7ad0fd555b5130f22a866d9dd10e861f589932303ef2314c7de
+14ms
+uploading snapshot
+2.2 MB
+38ms
+using build driver nixpacks-v1.41.0
+ 
+║ setup      │ python312, gcc, glibc, zlib, libffi, openssl, freetype, libpng, ║
+║            │ pkg-config                                                      ║
+║ install    │ python3.12 -m pip install -r requirements.txt                   ║
+║──────────────────────────────────────────────────────────────────────────────║
+╚══════════════════════════════════════════════════════════════════════════════╝
+ 
+
+internal
+load build definition from Dockerfile
+0ms
+
+internal
+load metadata for ghcr.io/railwayapp/nixpacks:ubuntu-1745885067
+1s
+
+internal
+load .dockerignore
+0ms
+SecretsUsedInArgOrEnv: Do not use ARG or ENV instructions for sensitive data (ARG "FUNPAY_GOLDEN_KEY") (line 11)(https://docs.docker.com/go/dockerfile/rule/secrets-used-in-arg-or-env/)
+ details: Sensitive data should not be used in the ARG or ENV commands
+SecretsUsedInArgOrEnv: Do not use ARG or ENV instructions for sensitive data (ARG "TELEGRAM_PASSWORD") (line 11)(https://docs.docker.com/go/dockerfile/rule/secrets-used-in-arg-or-env/)
+ details: Sensitive data should not be used in the ARG or ENV commands
+SecretsUsedInArgOrEnv: Do not use ARG or ENV instructions for sensitive data (ARG "TELEGRAM_TOKEN") (line 11)(https://docs.docker.com/go/dockerfile/rule/secrets-used-in-arg-or-env/)
+ details: Sensitive data should not be used in the ARG or ENV commands
+SecretsUsedInArgOrEnv: Do not use ARG or ENV instructions for sensitive data (ARG "TG_BOT_PASSWORD") (line 11)(https://docs.docker.com/go/dockerfile/rule/secrets-used-in-arg-or-env/)
+ details: Sensitive data should not be used in the ARG or ENV commands
+SecretsUsedInArgOrEnv: Do not use ARG or ENV instructions for sensitive data (ARG "TG_BOT_TOKEN") (line 11)(https://docs.docker.com/go/dockerfile/rule/secrets-used-in-arg-or-env/)
+ details: Sensitive data should not be used in the ARG or ENV commands
+SecretsUsedInArgOrEnv: Do not use ARG or ENV instructions for sensitive data (ENV "TELEGRAM_TOKEN") (line 12)(https://docs.docker.com/go/dockerfile/rule/secrets-used-in-arg-or-env/)
+ details: Sensitive data should not be used in the ARG or ENV commands
+SecretsUsedInArgOrEnv: Do not use ARG or ENV instructions for sensitive data (ENV "TG_BOT_TOKEN") (line 12)(https://docs.docker.com/go/dockerfile/rule/secrets-used-in-arg-or-env/)
+ details: Sensitive data should not be used in the ARG or ENV commands
+
+internal
+load build context
+0ms
+
+stage-0
+RUN nix-env -if .nixpacks/nixpkgs-bc8f8d1be58e8c8383e683a06e1e1e57893fff87.nix && nix-collect-garbage -d cached
+0ms
+
+stage-0
+RUN python3.12 -m pip install -r requirements.txt
+730ms
+/root/.nix-profile/bin/python3.12: No module named pip
+Build Failed: build daemon returned an error < failed to solve: process "/bin/bash -ol pipefail -c python3.12 -m pip install -r requirements.txt" did not complete successfully: exit code: 1 
