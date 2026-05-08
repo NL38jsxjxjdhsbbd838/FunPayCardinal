@@ -568,6 +568,10 @@ async def main_async(username: str, quantity: int) -> Tuple[Optional[str], Optio
         try:
             AMOUNT = float(text_init.get('amount', 0))
             logger.debug(f"Требуемая сумма: {AMOUNT} TON")
+            if AMOUNT > 0 and quantity > 0:
+                global ton_per_star_rate
+                ton_per_star_rate = AMOUNT / quantity
+                logger.debug(f"Обновлён курс TON/⭐: {ton_per_star_rate:.6f}")
         except (TypeError, ValueError):
             AMOUNT = 0
             logger.error("Не удалось конвертировать 'amount' в float.")
@@ -967,6 +971,10 @@ SETTINGS_PAGE = False
 
 RUNNING = True
 chat_id = None
+
+# --- Smart lot manager ---
+ton_per_star_rate: float = 0.0        # TON за одну звезду — обновляется из реальных транзакций
+balance_managed_inactive: set = set() # ID лотов, деактивированных менеджером баланса
 
 
 def handle_new_order_stars(c: Cardinal, e: NewOrderEvent, *args):
@@ -1560,6 +1568,112 @@ def deactivate_all_lots(c, subcategory_id):
         logger.error(f"Глобальная ошибка при деактивации лотов: {e}")
 
 
+async def smart_lot_manager_loop(c: Cardinal):
+    """
+    Каждые 5 минут проверяет баланс TON и управляет лотами:
+    - Деактивирует лоты, для которых не хватает баланса
+    - Активирует ранее деактивированные лоты когда баланс восстановлен
+    """
+    global ton_per_star_rate, balance_managed_inactive
+
+    INTERVAL = 300          # проверка каждые 5 минут
+    TON_BUFFER = 1.05       # +5% запас на газ
+    STAR_REGEX = re.compile(r'(\d+)\s*(?:звёзд?|stars?)', re.IGNORECASE)
+
+    await asyncio.sleep(60)  # Даём боту время полностью запуститься
+
+    while True:
+        try:
+            if not RUNNING or ton_per_star_rate <= 0:
+                await asyncio.sleep(INTERVAL)
+                continue
+
+            # Получаем баланс
+            balance_nano = await check_wallet_balance()
+            balance_ton = balance_nano / 1_000_000_000
+
+            # Загружаем ID лотов
+            json_path = 'storage/cache/auto_stars_id.json'
+            if not os.path.exists(json_path):
+                await asyncio.sleep(INTERVAL)
+                continue
+            with open(json_path, 'r', encoding='utf-8') as f:
+                lot_ids = json.load(f)
+            if not isinstance(lot_ids, list) or not lot_ids:
+                await asyncio.sleep(INTERVAL)
+                continue
+
+            activated = []
+            deactivated = []
+
+            for lot_id in lot_ids:
+                if not isinstance(lot_id, int):
+                    continue
+                try:
+                    fields = c.account.get_lot_fields(lot_id)
+                    if fields is None:
+                        continue
+
+                    # Ищем количество звёзд в описании или заголовке лота
+                    description = getattr(fields, 'description', '') or ''
+                    title = getattr(fields, 'title', '') or ''
+                    stars_match = STAR_REGEX.search(description) or STAR_REGEX.search(title)
+                    if not stars_match:
+                        continue
+
+                    stars_count = int(stars_match.group(1))
+                    required_ton = stars_count * ton_per_star_rate * TON_BUFFER
+
+                    if balance_ton < required_ton:
+                        # Недостаточно баланса — деактивируем
+                        if fields.active:
+                            fields.active = False
+                            c.account.save_lot(fields)
+                            balance_managed_inactive.add(lot_id)
+                            deactivated.append(f"лот {lot_id} ({stars_count}⭐ — нужно {required_ton:.3f} TON)")
+                            logger.info(f"[SmartLots] Деактивирован лот {lot_id}: баланс {balance_ton:.3f} < {required_ton:.3f} TON")
+                            await asyncio.sleep(0.7)
+                    else:
+                        # Баланс достаточен — активируем только если мы его выключили
+                        if not fields.active and lot_id in balance_managed_inactive:
+                            fields.active = True
+                            c.account.save_lot(fields)
+                            balance_managed_inactive.discard(lot_id)
+                            activated.append(f"лот {lot_id} ({stars_count}⭐ — нужно {required_ton:.3f} TON)")
+                            logger.info(f"[SmartLots] Активирован лот {lot_id}: баланс {balance_ton:.3f} >= {required_ton:.3f} TON")
+                            await asyncio.sleep(0.7)
+
+                except Exception as lot_err:
+                    logger.warning(f"[SmartLots] Ошибка при обработке лота {lot_id}: {lot_err}")
+
+            if activated or deactivated:
+                report_lines = [
+                    f"🤖 Авто-управление лотами",
+                    f"💰 Баланс: {balance_ton:.4f} TON | Курс: {ton_per_star_rate:.5f} TON/⭐",
+                    ""
+                ]
+                if deactivated:
+                    report_lines.append("⛔ Деактивированы (мало баланса):")
+                    report_lines.extend(f"  • {x}" for x in deactivated)
+                if activated:
+                    if deactivated:
+                        report_lines.append("")
+                    report_lines.append("✅ Активированы (баланс восстановлен):")
+                    report_lines.extend(f"  • {x}" for x in activated)
+                try:
+                    c.telegram.bot.send_message(
+                        USER_ID,
+                        sanitize_telegram_text("\n".join(report_lines))
+                    )
+                except Exception:
+                    pass
+
+        except Exception as e:
+            logger.error(f"[SmartLots] Критическая ошибка в цикле: {e}")
+
+        await asyncio.sleep(INTERVAL)
+
+
 def stars(m: types.Message, c: Cardinal):
     global RUNNING
     if RUNNING:
@@ -1921,6 +2035,11 @@ def init_commands(c: Cardinal):
     refresh_fragment_hash()
     _hash_thread = threading.Thread(target=_hash_refresh_loop, daemon=True, name="FragmentHashRefresh")
     _hash_thread.start()
+
+    # Запускаем умный менеджер лотов по балансу
+    if payment_processor is not None:
+        asyncio.run_coroutine_threadsafe(smart_lot_manager_loop(c), payment_processor.loop)
+        logger.info("[AutoStars] SmartLotManager запущен.")
 
     c.add_telegram_commands(UUID, [
         ("stars_config", "настройка автопродажи тг старсов", True),
