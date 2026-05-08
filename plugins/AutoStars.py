@@ -1045,31 +1045,14 @@ def handle_new_order_stars(c: Cardinal, e: NewOrderEvent, *args):
         stars_count = int(match.group(1))
         if e.order.amount >= 1:
             total_stars = stars_count * e.order.amount
-            c.send_message(
-                buyer_chat_id_e,
-                sanitize_telegram_text(f"Вы приобрели {e.order.amount} лотов, общее количество Stars: {total_stars}.")
-            )
-            ntfc_new_order = (
-                "💰 <b>Новый заказ:</b> <code>{}</code>\n\n"
-                "<b><i>🙍‍♂️ Покупатель:</i></b>  <code>{}</code>\n"
-                "<b><i>💵 Сумма:</i></b>  <code>{}</code>\n"
-                "<b><i>📇 ID:</i></b> <code>#{}</code>\n\n"
-                "<i>{}</i>"
-            )
-            delivery_info = f"Автовыдача {total_stars} Stars активирована."
-            notification_text = ntfc_new_order.format(
-                e.order.description,
-                e.order.buyer_username,
-                f"{e.order.price} {e.order.currency}",
-                e.order.id,
-                delivery_info
-            )
+
             try:
                 buyer_chat = c.account.get_chat_by_name(e.order.buyer_username, True)
                 if buyer_chat is None:
                     raise AttributeError
                 buyer_chat_id = buyer_chat.id
             except AttributeError:
+                logger.error(f"Не удалось найти чат покупателя {e.order.buyer_username} для заказа #{OrderID}")
                 return
 
             if buyer_chat_id not in orders_info:
@@ -1142,11 +1125,6 @@ def handle_new_order_stars(c: Cardinal, e: NewOrderEvent, *args):
                         f"Для отмены и возврата средств напишите: !бэк"
                     )
                 )
-        else:
-            c.send_message(
-                buyer_chat_id_e,
-                sanitize_telegram_text(f"Заказ на {stars_count} Stars")
-            )
 
 
 def handle_new_message_text(c: Cardinal, e: NewMessageEvent, *args):
