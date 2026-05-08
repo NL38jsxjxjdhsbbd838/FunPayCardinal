@@ -1576,7 +1576,7 @@ async def smart_lot_manager_loop(c: Cardinal):
     """
     global ton_per_star_rate, balance_managed_inactive
 
-    INTERVAL = 300          # проверка каждые 5 минут
+    INTERVAL = 120          # проверка каждые 2 минуты
     TON_BUFFER = 1.05       # +5% запас на газ
     STAR_REGEX = re.compile(r'(\d+)\s*(?:звёзд?|stars?)', re.IGNORECASE)
 
