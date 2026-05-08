@@ -972,6 +972,30 @@ chat_id = None
 def handle_new_order_stars(c: Cardinal, e: NewOrderEvent, *args):
     global RUNNING, chat_id, orders_info
     if not RUNNING:
+        # Бот выключен — сообщаем покупателю и уведомляем админа
+        try:
+            buyer_chat = c.account.get_chat_by_name(e.order.buyer_username, True)
+            if buyer_chat:
+                c.send_message(
+                    buyer_chat.id,
+                    sanitize_telegram_text(
+                        "⚠️ Автопродажа Stars временно приостановлена. "
+                        "Обратитесь к продавцу для уточнения сроков."
+                    )
+                )
+        except Exception:
+            pass
+        try:
+            c.telegram.bot.send_message(
+                USER_ID,
+                sanitize_telegram_text(
+                    f"⚠️ Поступил новый заказ #{e.order.id} от {e.order.buyer_username}, "
+                    f"но автопродажа ВЫКЛЮЧЕНА (RUNNING=False).\n"
+                    f"Нажмите ▶️ в панели /stars_config чтобы включить."
+                )
+            )
+        except Exception:
+            pass
         return
     OrderID = e.order.id
     buyer_chat_id_e = e.order.buyer_id
@@ -1192,7 +1216,7 @@ def handle_new_message_text(c: Cardinal, e: NewMessageEvent, *args):
 
         return
 
-    if current_order['username'] is None:
+    if current_order['username'] is None and not current_order.get('confirmed', False):
         if not re.match(r'^@\w+$', e.message.text.strip()):
             c.send_message(
                 e.message.chat_id,
@@ -1254,10 +1278,15 @@ def handle_new_message_text(c: Cardinal, e: NewMessageEvent, *args):
             current_order['answered'] = True
             orderID = current_order['orderID']
             stars_quantity = current_order.get('stars_count', 50)
+            saved_username = current_order['username']
             if payment_processor is not None:
                 payment_processor.enqueue_payment(
-                    c, buyer_chat_id, current_order['username'], stars_quantity, orderID
+                    c, buyer_chat_id, saved_username, stars_quantity, orderID
                 )
+            c.send_message(
+                buyer_chat_id,
+                sanitize_telegram_text("⏳ Принято! Заказ обрабатывается, ожидайте отправки Stars.")
+            )
 
         elif user_response in ['нет', '-', 'no', 'n', 'н']:
             current_order['answered'] = True
