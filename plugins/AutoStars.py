@@ -1614,11 +1614,16 @@ async def smart_lot_manager_loop(c: Cardinal):
                     if fields is None:
                         continue
 
-                    # Ищем количество звёзд в описании или заголовке лота
-                    description = getattr(fields, 'description', '') or ''
-                    title = getattr(fields, 'title', '') or ''
-                    stars_match = STAR_REGEX.search(description) or STAR_REGEX.search(title)
+                    # Ищем количество звёзд в заголовке и описании лота (RU + EN)
+                    search_text = " ".join(filter(None, [
+                        getattr(fields, 'title_ru', '') or '',
+                        getattr(fields, 'title_en', '') or '',
+                        getattr(fields, 'description_ru', '') or '',
+                        getattr(fields, 'description_en', '') or '',
+                    ]))
+                    stars_match = STAR_REGEX.search(search_text)
                     if not stars_match:
+                        logger.debug(f"[SmartLots] Лот {lot_id}: звёзды не найдены в тексте: {search_text[:80]!r}")
                         continue
 
                     stars_count = int(stars_match.group(1))
