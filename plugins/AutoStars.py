@@ -1634,8 +1634,9 @@ async def smart_lot_manager_loop(c: Cardinal):
                             logger.info(f"[SmartLots] Деактивирован лот {lot_id}: баланс {balance_ton:.3f} < {required_ton:.3f} TON")
                             await asyncio.sleep(0.7)
                     else:
-                        # Баланс достаточен — активируем только если мы его выключили
-                        if not fields.active and lot_id in balance_managed_inactive:
+                        # Баланс достаточен — активируем любой неактивный лот из списка
+                        # (в т.ч. те что FunPay сам выключил после продажи)
+                        if not fields.active:
                             fields.active = True
                             c.account.save_lot(fields)
                             balance_managed_inactive.discard(lot_id)
