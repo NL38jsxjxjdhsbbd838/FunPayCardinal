@@ -1606,6 +1606,18 @@ async def smart_lot_manager_loop(c: Cardinal):
             activated = []
             deactivated = []
 
+            # Строим словарь {lot_id: description} из уже загруженного профиля
+            # (curr_profile обновляется каждые ~30 сек Cardinal'ом)
+            profile_lots: dict = {}
+            try:
+                if c.curr_profile:
+                    for lot_obj in c.curr_profile.get_lots():
+                        if lot_obj.id is not None:
+                            desc = getattr(lot_obj, 'description', None) or getattr(lot_obj, 'title', None) or ''
+                            profile_lots[lot_obj.id] = desc
+            except Exception as _pe:
+                logger.debug(f"[SmartLots] Не удалось получить лоты из профиля: {_pe}")
+
             for lot_id in lot_ids:
                 if not isinstance(lot_id, int):
                     continue
@@ -1614,16 +1626,29 @@ async def smart_lot_manager_loop(c: Cardinal):
                     if fields is None:
                         continue
 
-                    # Ищем количество звёзд в заголовке и описании лота (RU + EN)
-                    search_text = " ".join(filter(None, [
+                    # Сначала ищем описание лота в уже загруженном профиле (самый надёжный источник)
+                    profile_desc = profile_lots.get(lot_id, '')
+
+                    # Fallback: поля формы из get_lot_fields (RU + EN)
+                    form_text = " ".join(filter(None, [
                         getattr(fields, 'title_ru', '') or '',
                         getattr(fields, 'title_en', '') or '',
                         getattr(fields, 'description_ru', '') or '',
                         getattr(fields, 'description_en', '') or '',
                     ]))
+
+                    # Последний fallback: дамп всех raw-ключей формы для отладки
+                    search_text = profile_desc or form_text
+                    if not search_text:
+                        raw_fields = getattr(fields, '_LotFields__fields', {})
+                        # Ищем звёзды в значениях любых полей формы
+                        search_text = " ".join(str(v) for v in raw_fields.values() if v)
+                        if search_text:
+                            logger.debug(f"[SmartLots] Лот {lot_id}: используем raw-поля: {list(raw_fields.keys())[:10]}")
+
                     stars_match = STAR_REGEX.search(search_text)
                     if not stars_match:
-                        logger.debug(f"[SmartLots] Лот {lot_id}: звёзды не найдены в тексте: {search_text[:80]!r}")
+                        logger.debug(f"[SmartLots] Лот {lot_id}: звёзды не найдены. profile={profile_desc!r} form={form_text[:40]!r}")
                         continue
 
                     stars_count = int(stars_match.group(1))
