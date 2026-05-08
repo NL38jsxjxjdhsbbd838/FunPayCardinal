@@ -973,7 +973,7 @@ RUNNING = True
 chat_id = None
 
 # --- Smart lot manager ---
-ton_per_star_rate: float = 0.0        # TON за одну звезду — обновляется из реальных транзакций
+ton_per_star_rate: float = 0.005871   # TON за одну звезду — обновляется из реальных транзакций
 balance_managed_inactive: set = set() # ID лотов, деактивированных менеджером баланса
 
 
